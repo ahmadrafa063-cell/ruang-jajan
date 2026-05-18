@@ -76,7 +76,7 @@ export function Home() {
             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px]"></div>
             <div className="relative bg-white p-6 rounded-[40px] shadow-2xl border border-orange-50 shadow-orange-100/50 transform lg:rotate-3 hover:rotate-0 transition-transform duration-500">
               <img 
-                src="/src/assets/images/ChatGPT Image May 18, 2026, 08_56_09 PM.png" 
+                src={DUMMY_PRODUCTS[0].image} 
                 alt="Kopi Genggaman" 
                 className="w-full h-64 md:h-80 object-cover object-center bg-black rounded-[32px] mb-6" 
               />
