@@ -1,0 +1,6 @@
+{
+  "name": "RuangJajan - Premium Food Experience",
+  "description": "A high-end food delivery and e-commerce platform with premium UI, smooth animations, and WhatsApp integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
