@@ -16,7 +16,7 @@ export function Menu() {
   const [sortBy, setSortBy] = useState<'popular' | 'newest'>('popular');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(DUMMY_PRODUCTS);
 
-  const categories = ['All', 'Food', 'Drinks', 'Snacks', 'Desserts'];
+  const categories = ['All','Snacks', 'Drinks'];
 
   useEffect(() => {
     let result = DUMMY_PRODUCTS.filter(p => {

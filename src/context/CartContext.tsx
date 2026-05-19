@@ -64,8 +64,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const shipping = 15000; // Flat dummy shipping cost
-  const total = subtotal + (cart.length > 0 ? shipping : 0);
+  const shipping = 0; // Free shipping
+  const total = subtotal;
   const itemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (

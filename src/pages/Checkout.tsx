@@ -38,20 +38,16 @@ export function Checkout() {
       return;
     }
 
-    const itemsList = cart.map(item => `🍔 ${item.name} x${item.quantity} (Rp ${item.price.toLocaleString()})`).join('\n');
-    const message = `Hello admin, I would like to order:
+    const itemsList = cart.map(item => `- ${item.name} x${item.quantity}`).join('\n');
+    const message = `Halo kak, Saya pesan
 
+Nama: ${formData.name}
+Alamat: ${formData.address}
+Menu: 
 ${itemsList}
+Total Harga: Rp ${total.toLocaleString()}
 
-💰 Total: Rp ${total.toLocaleString()}
-
-👤 Name: ${formData.name}
-📞 Phone: ${formData.phone}
-📍 Address: ${formData.address}
-📝 Notes: ${formData.notes || '-'}
-
-Payment Method: ${formData.paymentMethod}
-Checkout via: RuangJajan Web`;
+Pembayaran: ${formData.paymentMethod}`;
 
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/6285240174510?text=${encodedMessage}`, '_blank');
@@ -101,11 +97,11 @@ Checkout via: RuangJajan Web`;
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-muted-foreground">Full Name *</label>
-                    <Input name="name" value={formData.name} onChange={handleChange} placeholder="Ahmad Rafaa" className="h-12 rounded-xl" />
+                    <Input name="name" value={formData.name} onChange={handleChange} placeholder="Nickname" className="h-12 rounded-xl" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-muted-foreground">Phone Number *</label>
-                    <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="+62 851..." className="h-12 rounded-xl" />
+                    <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="08123xxx" className="h-12 rounded-xl" />
                   </div>
                </div>
                <div className="space-y-2">
@@ -121,6 +117,27 @@ Checkout via: RuangJajan Web`;
                <div className="space-y-2">
                   <label className="text-sm font-bold text-muted-foreground">Notes (Optional)</label>
                   <Input name="notes" value={formData.notes} onChange={handleChange} placeholder="Extra spicy, please!" className="h-12 rounded-xl" />
+               </div>
+
+               <div className="space-y-3 pt-2">
+                  <label className="text-sm font-bold text-muted-foreground">Pembayaran / Payment Method *</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {['COD', 'Bank Transfer', 'QRIS'].map((method) => (
+                      <button
+                        key={method}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, paymentMethod: method })}
+                        className={cn(
+                          "py-3 rounded-xl text-sm font-bold border transition-all hover:border-primary active:scale-95",
+                          formData.paymentMethod === method
+                            ? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-200"
+                            : "bg-white text-slate-600 border-slate-100"
+                        )}
+                      >
+                        {method}
+                      </button>
+                    ))}
+                  </div>
                </div>
             </div>
 
@@ -191,10 +208,6 @@ Checkout via: RuangJajan Web`;
                           <span className="text-slate-400 font-medium">Subtotal Order</span>
                           <span className="font-bold">Rp {subtotal.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-400 font-medium">Delivery Handling</span>
-                          <span className="font-bold">Rp 15,000</span>
-                        </div>
                         <Separator className="my-2 bg-slate-100" />
                         <div className="flex justify-between items-center py-2">
                           <span className="font-black text-slate-900 uppercase tracking-widest text-xs">Final Amount</span>
@@ -206,17 +219,16 @@ Checkout via: RuangJajan Web`;
                     <div className="space-y-3 pt-4">
                       <Button 
                         onClick={handleWhatsAppCheckout} 
-                        className="w-full rounded-2xl py-9 h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-200 text-white font-black gap-3 text-xl transition-all transform hover:scale-[1.02] active:scale-95"
+                        className="w-full rounded-2xl py-6 h-auto bg-[#25D366] hover:bg-[#20ba59] text-white font-black gap-2 text-sm uppercase tracking-widest shadow-lg shadow-green-100 transition-all transform hover:scale-[1.02] active:scale-95 border-none"
                       >
-                        <MessageCircle size={24} /> Confirm via WhatsApp
+                        <MessageCircle size={20} /> CONFIRM VIA WHATSAPP
                       </Button>
                       
                       <Button 
                         onClick={handleShopeeCheckout}
-                        variant="ghost" 
-                        className="w-full rounded-2xl py-6 h-auto text-orange-600 hover:bg-orange-50 font-black gap-2 text-sm uppercase tracking-widest"
+                        className="w-full rounded-2xl py-6 h-auto bg-[#EE4D2D] hover:bg-[#d83f20] text-white font-black gap-2 text-sm uppercase tracking-widest shadow-lg shadow-orange-100 transition-all transform hover:scale-[1.02] active:scale-95 border-none"
                       >
-                        <ShoppingBag size={20} /> Or Order via Shopee Store
+                        <ShoppingBag size={20} /> CONFIRM VIA SHOPEEFOOD
                       </Button>
                     </div>
 

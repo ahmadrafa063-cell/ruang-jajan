@@ -74,7 +74,6 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             <Plus size={14} />
                           </button>
                         </div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic opacity-50">Authorized Selection</span>
                       </div>
                     </div>
                     <Button 
@@ -108,16 +107,18 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         </ScrollArea>
 
         {cart.length > 0 && (
-          <div className="p-6 border-t border-slate-100 bg-slate-50 space-y-4">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center py-2">
-                <span className="font-black text-slate-900 uppercase tracking-[0.2em] text-[10px]">Total Order Amount</span>
-                <span className="text-2xl font-black text-primary">Rp {total.toLocaleString()}</span>
-              </div>
+          <div className="p-6 pt-4 border-t border-slate-100 bg-slate-50 space-y-4">
+            <div className="flex flex-col gap-0.5">
+              <span className="font-black text-slate-400 uppercase tracking-[0.2em] text-[10px] shrink-0">Total Order Amount</span>
+              <span className="text-3xl font-black text-primary">Rp {total.toLocaleString()}</span>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 pt-2">
-              <Link to="/checkout" className={cn(buttonVariants({ size: "lg" }), "w-full rounded-2xl py-8 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-200 font-bold transition-all")}>
+            <div className="grid grid-cols-1 gap-3 pt-1">
+              <Link 
+                to="/checkout" 
+                onClick={onClose}
+                className={cn(buttonVariants({ size: "lg" }), "w-full rounded-2xl py-8 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-200 font-bold transition-all")}
+              >
                 Proceed to Checkout <ArrowRight size={20} />
               </Link>
               <Button variant="outline" onClick={onClose} className="w-full rounded-2xl py-8 border-slate-200 text-slate-600 font-bold hover:bg-white hover:border-orange-200 transition-all">

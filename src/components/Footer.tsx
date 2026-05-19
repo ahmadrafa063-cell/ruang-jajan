@@ -23,14 +23,11 @@ export function Footer() {
             Premium food delivery service bringing gourmet meals from local kitchens to your doorstep. Experience the dash of deliciousness.
           </p>
           <div className="flex items-center gap-4">
-            <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm">
+            <a href="https://www.instagram.com/raurapq/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm">
               <Instagram size={20} />
             </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm">
+            <a href="https://web.facebook.com/ahmad.rafa.9026040" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm">
               <Facebook size={20} />
-            </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm">
-              <Twitter size={20} />
             </a>
           </div>
         </div>
@@ -43,7 +40,7 @@ export function Footer() {
           <ul className="space-y-4">
             <li className="flex items-start gap-3">
               <MapPin size={18} className="text-primary shrink-0" />
-              <span className="text-sm text-slate-500 font-semibold">JI. Samarinda No. 123, Kalimantan Timur, Indonesia</span>
+              <span className="text-sm text-slate-500 font-semibold">Jl. Rajawali Dalam 3 No.69 RT 10</span>
             </li>
             <li className="flex items-center gap-3">
               <Phone size={18} className="text-primary shrink-0" />
@@ -51,7 +48,7 @@ export function Footer() {
             </li>
             <li className="flex items-center gap-3">
               <Mail size={18} className="text-primary shrink-0" />
-              <span className="text-sm text-slate-500 font-semibold">hello@ruangjajan.com</span>
+              <a href="mailto:ahmadrafa063@gmail.com" className="text-sm text-slate-500 font-semibold hover:text-primary transition-colors">ahmadrafa063@gmail.com</a>
             </li>
           </ul>
         </div>

@@ -95,11 +95,6 @@ export function ProductDetail() {
                 {product.name}
               </h1>
               <div className="flex items-center gap-6">
-                <div className="flex items-center gap-1.5 text-yellow-500 font-bold">
-                  <Star size={18} fill="currentColor" />
-                  <span className="text-slate-900">{product.rating}</span>
-                  <span className="text-slate-400 font-bold text-xs ml-1 uppercase tracking-widest">(120+ Reviews)</span>
-                </div>
                 <div className="flex items-center gap-2 text-primary font-bold">
                   <Zap size={18} fill="currentColor" />
                   <span className="text-xs font-bold uppercase tracking-widest">Available Now</span>
@@ -116,24 +111,41 @@ export function ProductDetail() {
                  <span className="text-2xl font-black text-primary uppercase tracking-widest italic">Curated Edition</span>
               </div>
               
-              <div className="flex items-center border border-slate-200 rounded-2xl p-1 bg-white shadow-sm w-fit">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="rounded-xl h-12 w-12 text-slate-400 hover:text-primary transition-colors"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                >
-                  <Minus size={20} />
-                </Button>
-                <span className="w-12 text-center font-black text-xl text-slate-900">{quantity}</span>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="rounded-xl h-12 w-12 text-slate-400 hover:text-primary transition-colors"
-                  onClick={() => setQuantity(quantity + 1)}
-                >
-                  <Plus size={20} />
-                </Button>
+              <div className="flex flex-col items-start sm:items-end gap-2 w-fit">
+                <div className="flex items-center border border-slate-200 rounded-2xl p-1 bg-white shadow-sm w-fit">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-xl h-12 w-12 text-slate-400 hover:text-primary transition-colors"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    <Minus size={20} />
+                  </Button>
+                  <span className="w-12 text-center font-black text-xl text-slate-900">{quantity}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-xl h-12 w-12 text-slate-400 hover:text-primary transition-colors"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    <Plus size={20} />
+                  </Button>
+                </div>
+                <div className="flex items-center gap-1 px-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={16}
+                      className={cn(
+                        "text-yellow-400",
+                        star <= (product.rating > 0 ? Math.round(product.rating) : 5) ? "fill-yellow-400" : "fill-none"
+                      )}
+                    />
+                  ))}
+                  <span className="text-sm font-bold text-slate-700 ml-1">
+                    {product.rating > 0 ? product.rating : "5.0"}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -145,7 +157,15 @@ export function ProductDetail() {
                 <ShoppingBag size={24} /> Add to Cart
               </Button>
               <a 
-                href="https://wa.me/6285240174510?text=Halo%2C%20saya%20ingin%20pesan%20makanan%20sesuai%20foto%20produk" 
+                href={`https://wa.me/6285240174510?text=${encodeURIComponent(`Halo kak, Saya pesan
+
+Nama: 
+Alamat: 
+Menu: 
+- ${product.name} x${quantity}
+Total Harga: Rp ${(product.price * quantity).toLocaleString()}
+
+Pembayaran: COD/Bank Transfer/QRIS`)}`}
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-2xl py-8 h-auto px-8 border-2 border-slate-100 text-slate-600 font-bold group flex items-center justify-center gap-2 hover:border-orange-200 transition-all")}

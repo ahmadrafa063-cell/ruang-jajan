@@ -10,14 +10,16 @@ import { Product } from '../types';
 import { cn } from '../lib/utils';
 import { useCart } from '../context/CartContext';
 
+
 export function Home() {
+
   const [search, setSearch] = React.useState('');
   const [activeCategory, setActiveCategory] = React.useState('All');
   const [sortBy, setSortBy] = React.useState<'popular' | 'newest'>('popular');
   const [filteredProducts, setFilteredProducts] = React.useState<Product[]>(DUMMY_PRODUCTS);
   const { addToCart } = useCart();
 
-  const categories = ['All', 'Snack', 'Drinks'];
+  const categories = ['All', 'Snacks', 'Drinks'];
 
   React.useEffect(() => {
     let result = DUMMY_PRODUCTS.filter(p => {
@@ -32,6 +34,8 @@ export function Home() {
 
     setFilteredProducts(result);
   }, [search, activeCategory, sortBy]);
+
+
 
   return (
     <div className="overflow-hidden">
@@ -74,12 +78,14 @@ export function Home() {
             className="col-span-12 lg:col-span-5 relative mt-12 lg:mt-0"
           >
             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px]"></div>
-            <div className="relative bg-white p-6 rounded-[40px] shadow-2xl border border-orange-50 shadow-orange-100/50 transform lg:rotate-3 hover:rotate-0 transition-transform duration-500">
-              <img 
-                src={DUMMY_PRODUCTS[0].image} 
-                alt="Kopi Genggaman" 
-                className="w-full h-64 md:h-80 object-cover object-center bg-black rounded-[32px] mb-6" 
-              />
+            <div className="relative bg-white p-6 rounded-[40px] shadow-2xl border border-orange-50 shadow-orange-100/50 transform lg:rotate-3 hover:rotate-0 transition-transform duration-500 group">
+              <Link to={`/product/${DUMMY_PRODUCTS[0].id}`} className="block overflow-hidden rounded-[32px] mb-6">
+                <img 
+                  src={DUMMY_PRODUCTS[0].image} 
+                  alt="Kopi Genggaman" 
+                  className="w-full h-64 md:h-80 object-cover object-center bg-black group-hover:scale-110 transition-transform duration-500" 
+                />
+              </Link>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Drinks</span>
                 <div className="flex items-center gap-0.5">
@@ -97,7 +103,9 @@ export function Home() {
                 </div>
               </div>
               
-              <h3 className="font-bold text-slate-900 text-xl mb-1">Kopi Genggaman</h3>
+              <Link to={`/product/${DUMMY_PRODUCTS[0].id}`}>
+                <h3 className="font-bold text-slate-900 text-xl mb-1 group-hover:text-primary transition-colors">Kopi Genggaman</h3>
+              </Link>
               <p className="text-slate-500 text-xs line-clamp-2 mt-1 mb-4">
                 Signature premium coffee blend with a rich, smooth finish and a hint of artisan sweetness.
               </p>
