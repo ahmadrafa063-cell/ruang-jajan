@@ -42,38 +42,38 @@ export function Contact() {
                 <h2 className="text-3xl font-black text-slate-900 tracking-tight">Saluran Langsung</h2>
                 
                 <div className="space-y-6">
-                   <a href="mailto:hello@ruangjajan.id" className="flex items-center gap-6 group">
-                      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                   <a href="mailto:hello@ruangjajan.id" className="soft-hover-action flex items-center gap-6 rounded-2xl group">
+                      <div className="motion-standard w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white">
                          <Mail size={24} />
                       </div>
                       <div>
                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Email Kami</p>
-                         <p className="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors">hello@ruangjajan.id</p>
+                         <p className="motion-standard text-xl font-bold text-slate-900 group-hover:text-primary">hello@ruangjajan.id</p>
                       </div>
                    </a>
                    
-                   <a href="tel:+6285240174510" className="flex items-center gap-6 group">
-                      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                   <a href="tel:+6285240174510" className="soft-hover-action flex items-center gap-6 rounded-2xl group">
+                      <div className="motion-standard w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white">
                          <Phone size={24} />
                       </div>
                       <div>
                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Layanan Telepon</p>
-                         <p className="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors">+62 852 4017 4510</p>
+                         <p className="motion-standard text-xl font-bold text-slate-900 group-hover:text-primary">+62 852 4017 4510</p>
                       </div>
                    </a>
 
-                   <a href="https://wa.me/6285240174510" target="_blank" rel="noopener noreferrer" className="flex items-center gap-6 group">
-                      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-[#25D366] group-hover:text-white transition-all">
+                   <a href="https://wa.me/6285240174510" target="_blank" rel="noopener noreferrer" className="soft-hover-action flex items-center gap-6 rounded-2xl group">
+                      <div className="motion-standard w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-[#25D366] group-hover:text-white">
                          <MessageCircle size={24} />
                       </div>
                       <div>
                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">WhatsApp Saja</p>
-                         <p className="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors">+62 852 4017 4510</p>
+                         <p className="motion-standard text-xl font-bold text-slate-900 group-hover:text-primary">+62 852 4017 4510</p>
                       </div>
                    </a>
                    
                    <div className="flex items-center gap-6 group">
-                      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                      <div className="motion-standard w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white">
                          <MapPin size={24} />
                       </div>
                       <div>
@@ -84,13 +84,13 @@ export function Contact() {
                 </div>
 
                 <div className="pt-8 flex items-center gap-4">
-                   <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-slate-400 hover:text-primary hover:bg-orange-50 transition-all">
+                   <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-slate-400 hover:text-primary hover:bg-orange-50">
                       <Instagram size={20} />
                    </Button>
-                   <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-slate-400 hover:text-primary hover:bg-orange-50 transition-all">
+                   <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-slate-400 hover:text-primary hover:bg-orange-50">
                       <Twitter size={20} />
                    </Button>
-                   <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-slate-400 hover:text-primary hover:bg-orange-50 transition-all">
+                   <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-slate-400 hover:text-primary hover:bg-orange-50">
                       <Facebook size={20} />
                    </Button>
                 </div>
@@ -119,10 +119,10 @@ export function Contact() {
                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Pesan</label>
                    <textarea 
                      placeholder="Beritahu kami apa yang Anda pikirkan..." 
-                     className="w-full bg-white/5 border border-white/10 text-white rounded-xl h-32 p-4 focus:ring-2 focus:ring-primary outline-hidden"
+                     className="motion-standard w-full bg-white/5 border border-white/10 text-white rounded-xl h-32 p-4 focus:ring-2 focus:ring-primary outline-hidden"
                    />
                 </div>
-                <Button className="w-full rounded-2xl py-9 h-auto bg-primary text-white font-black text-2xl shadow-2xl shadow-primary/30 transform hover:scale-[1.02] transition-all active:scale-95">
+                <Button className="w-full rounded-2xl py-9 h-auto bg-primary text-white font-black text-2xl shadow-2xl shadow-primary/30">
                    Kirim Permintaan
                 </Button>
              </form>

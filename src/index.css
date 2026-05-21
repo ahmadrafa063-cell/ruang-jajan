@@ -89,6 +89,66 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .motion-standard {
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .pressable-action {
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform;
+  }
+  .pressable-action:hover {
+    transform: translateY(-1px);
+  }
+  .pressable-action:active {
+    transform: translateY(1px) scale(0.99);
+  }
+  .soft-hover-action {
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .soft-hover-action:hover {
+    box-shadow: 0 14px 32px rgb(15 23 42 / 0.1);
+  }
+  .icon-action {
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform;
+  }
+  .icon-action:hover {
+    transform: translateY(-1px);
+  }
+  .icon-action:active {
+    transform: translateY(1px) scale(0.96);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+    }
+    .motion-standard,
+    .pressable-action,
+    .soft-hover-action,
+    .icon-action {
+      transition-duration: 1ms !important;
+      animation-duration: 1ms !important;
+      will-change: auto;
+    }
+    .pressable-action:hover,
+    .pressable-action:active,
+    .icon-action:hover,
+    .icon-action:active {
+      transform: none !important;
+    }
+  }
 }
 
 @layer base {

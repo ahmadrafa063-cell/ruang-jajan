@@ -13,6 +13,7 @@ import { Checkout } from './pages/Checkout';
 import { ProductDetail } from './pages/ProductDetail';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { Button } from './components/ui/button';
+import { ContactQR } from './components/ContactQR';
 
 // Placeholder pages
 const About = () => <div className="p-24 text-center max-w-4xl mx-auto space-y-8 min-h-screen">
@@ -27,10 +28,7 @@ const About = () => <div className="p-24 text-center max-w-4xl mx-auto space-y-8
 
 const Contact = () => <div className="px-4 py-16 sm:p-24 text-center max-w-2xl mx-auto space-y-8">
   <div className="bg-background border rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
-    <div className="text-center">
-      <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Alamat</p>
-      <p className="text-lg font-bold">Jl. Rajawali Dalam 3 No.69 RT 10</p>
-    </div>
+    <ContactQR />
     <div className="text-center">
       <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Contact person</p>
       <p className="text-2xl font-black text-primary">+62 852 4017 4510</p>

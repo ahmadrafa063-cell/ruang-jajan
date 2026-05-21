@@ -1,6 +1,7 @@
 import { Product } from '../types';
 import kopiImg from '../assets/images/ChatGPT Image May 18, 2026, 08_56_09 PM.png';
 import makaroniImg from '../assets/images/ChatGPT Image May 18, 2026, 11_51_30 PM.png';
+import kacangImg from '../assets/images/ChatGPT Image May 20, 2026, 08_44_12 PM.png';
 
 export const DUMMY_PRODUCTS: Product[] = [
   {
@@ -16,11 +17,11 @@ export const DUMMY_PRODUCTS: Product[] = [
   },
   {
     id: 'p2',
-    name: 'Spicy Fire Fried Chicken',
-    description: 'Crispy Korean-style fried chicken coated in a spicy gochujang glaze. Served with radish.',
+    name: 'Kacang Goreng',
+    description: 'Kacang goreng renyah dengan rasa gurih klasik, cocok untuk camilan santai atau teman minum kopi.',
     price: 55000,
     category: 'Snacks',
-    image: 'https://images.unsplash.com/photo-1626082896492-766af4eb9131?q=80&w=800&auto=format&fit=crop',
+    image: kacangImg,
     rating: 0.0,
     badges: ['Spicy', 'Promo'],
     isAvailable: true

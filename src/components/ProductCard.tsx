@@ -3,11 +3,10 @@ import { Product } from '../types';
 import { Card, CardContent, CardFooter } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Star, Plus, Flame, Sparkles, Zap } from 'lucide-react';
+import { Plus, Flame, Sparkles, Zap } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { cn } from '../lib/utils';
+import { StarReview } from './StarReview';
 
 interface ProductCardProps {
   product: Product;
@@ -26,17 +25,14 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -8 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Card className="bg-white rounded-[32px] p-4 border border-slate-100 shadow-sm flex flex-col h-full group hover:shadow-xl hover:border-orange-100 transition-all duration-300">
+    <div>
+      <Card className="bg-white rounded-[32px] p-4 border border-slate-100 shadow-sm flex flex-col h-full group">
         <div className="relative h-48 mb-4 overflow-hidden rounded-2xl">
           <Link to={`/product/${product.id}`} className="block h-full">
             <img 
               src={product.image} 
               alt={product.name} 
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />
           </Link>
@@ -52,23 +48,11 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{product.category}</span>
-            <div className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  size={12}
-                  className={cn(
-                    "text-yellow-400",
-                    star <= Math.round(product.rating) ? "fill-yellow-400" : "fill-none"
-                  )}
-                />
-              ))}
-              <span className="text-xs font-bold text-slate-700 ml-1">{product.rating}</span>
-            </div>
+            <StarReview productId={product.id} defaultRating={product.rating} size={12} />
           </div>
           
           <Link to={`/product/${product.id}`}>
-            <h3 className="font-bold text-slate-900 text-lg group-hover:text-primary transition-colors line-clamp-1">{product.name}</h3>
+            <h3 className="font-bold text-slate-900 text-lg line-clamp-1">{product.name}</h3>
           </Link>
           <p className="text-slate-500 text-xs line-clamp-2 mt-1 mb-4 flex-1">
             {product.description}
@@ -81,7 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
             <Button 
               size="icon" 
-              className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-primary transition-all shadow-xl shadow-slate-200"
+              className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-slate-200"
               onClick={() => addToCart(product)}
             >
               <Plus size={24} />
@@ -89,6 +73,6 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
       </Card>
-    </motion.div>
+    </div>
   );
 }

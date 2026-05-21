@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Star, Search, Plus } from 'lucide-react';
+import { motion } from 'motion/react';
+import { ArrowRight, Search, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { buttonVariants, Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -9,6 +9,7 @@ import { ProductCard } from '../components/ProductCard';
 import { Product } from '../types';
 import { cn } from '../lib/utils';
 import { useCart } from '../context/CartContext';
+import { StarReview } from '../components/StarReview';
 
 
 export function Home() {
@@ -63,7 +64,7 @@ export function Home() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <Link to="/menu" className={cn(buttonVariants({ size: "lg" }), "px-10 py-8 bg-slate-900 text-white font-black rounded-2xl shadow-2xl shadow-slate-200 flex items-center justify-center gap-3 hover:bg-slate-800 transition-all text-xl active:scale-95")}>
+              <Link to="/menu" className={cn(buttonVariants({ size: "lg" }), "px-10 py-8 bg-slate-900 text-white font-black rounded-2xl shadow-2xl shadow-slate-200 flex items-center justify-center gap-3 hover:bg-slate-800 text-xl")}>
                 Order Now <ArrowRight size={22} />
               </Link>
             </div>
@@ -78,33 +79,21 @@ export function Home() {
             className="col-span-12 lg:col-span-5 relative mt-12 lg:mt-0"
           >
             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px]"></div>
-            <div className="relative bg-white p-6 rounded-[40px] shadow-2xl border border-orange-50 shadow-orange-100/50 transform lg:rotate-3 hover:rotate-0 transition-transform duration-500 group">
+            <div className="soft-hover-action relative bg-white p-6 rounded-[40px] shadow-2xl border border-orange-50 shadow-orange-100/50 group">
               <Link to={`/product/${DUMMY_PRODUCTS[0].id}`} className="block overflow-hidden rounded-[32px] mb-6">
                 <img 
                   src={DUMMY_PRODUCTS[0].image} 
                   alt="Kopi Genggaman" 
-                  className="w-full h-64 md:h-80 object-cover object-center bg-black group-hover:scale-110 transition-transform duration-500" 
+                  className="w-full h-64 md:h-80 object-cover object-center bg-black" 
                 />
               </Link>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Drinks</span>
-                <div className="flex items-center gap-0.5">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      size={12}
-                      className={cn(
-                        "text-yellow-400",
-                        star <= 0 ? "fill-yellow-400" : "fill-none"
-                      )}
-                    />
-                  ))}
-                  <span className="text-xs font-bold text-slate-700 ml-1">0.0</span>
-                </div>
+                <StarReview productId={DUMMY_PRODUCTS[0].id} defaultRating={DUMMY_PRODUCTS[0].rating} size={12} />
               </div>
               
               <Link to={`/product/${DUMMY_PRODUCTS[0].id}`}>
-                <h3 className="font-bold text-slate-900 text-xl mb-1 group-hover:text-primary transition-colors">Kopi Genggaman</h3>
+                <h3 className="motion-standard font-bold text-slate-900 text-xl mb-1 group-hover:text-primary">Kopi Genggaman</h3>
               </Link>
               <p className="text-slate-500 text-xs line-clamp-2 mt-1 mb-4">
                 Signature premium coffee blend with a rich, smooth finish and a hint of artisan sweetness.
@@ -117,7 +106,7 @@ export function Home() {
                 </div>
                 <div 
                   onClick={() => addToCart(DUMMY_PRODUCTS[0])}
-                  className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-primary transition-all shadow-xl shadow-slate-200 cursor-pointer"
+                  className="icon-action w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-primary shadow-xl shadow-slate-200 cursor-pointer"
                 >
                   <Plus size={24} />
                 </div>
@@ -149,12 +138,12 @@ export function Home() {
           </div>
 
           {/* Filters */}
-          <div className="flex flex-col lg:flex-row items-center gap-6 bg-white py-6 rounded-3xl px-4 sm:px-6 border border-orange-50 shadow-xl shadow-orange-100/20 transition-all duration-300">
+          <div className="soft-hover-action flex flex-col lg:flex-row items-center gap-6 bg-white py-6 rounded-3xl px-4 sm:px-6 border border-orange-50 shadow-xl shadow-orange-100/20">
             <div className="relative flex-1 w-full">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
               <Input 
                 placeholder="Search for dishes, drinks, or desserts..." 
-                className="pl-12 h-14 rounded-2xl border border-slate-100 bg-slate-50/50 focus-visible:ring-primary focus-visible:bg-white transition-all text-slate-900 font-medium"
+                className="motion-standard pl-12 h-14 rounded-2xl border border-slate-100 bg-slate-50/50 focus-visible:ring-primary focus-visible:bg-white text-slate-900 font-medium"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -167,7 +156,7 @@ export function Home() {
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
                       className={cn(
-                        "px-6 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
+                        "pressable-action px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap",
                         activeCategory === cat 
                           ? "bg-slate-900 text-white shadow-lg shadow-slate-200" 
                           : "bg-white text-slate-600 border border-slate-100 hover:border-orange-200"
@@ -195,16 +184,11 @@ export function Home() {
           {/* Grid */}
           <div>
             {filteredProducts.length > 0 ? (
-              <motion.div 
-                layout
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-              >
-                <AnimatePresence>
-                  {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </AnimatePresence>
-              </motion.div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
             ) : (
               <div className="h-[40vh] flex flex-col items-center justify-center text-center space-y-4">
                 <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">

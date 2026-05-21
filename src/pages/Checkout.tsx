@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
 import { ShoppingBag, Truck, MessageCircle, ArrowLeft, Store } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -123,12 +122,12 @@ Pembayaran: ${formData.paymentMethod}`;
                   <label className="text-sm font-bold text-muted-foreground">Pembayaran / Payment Method *</label>
                   <div className="grid grid-cols-3 gap-3">
                     {['COD', 'Bank Transfer', 'QRIS'].map((method) => (
-                      <button
+                    <button
                         key={method}
                         type="button"
                         onClick={() => setFormData({ ...formData, paymentMethod: method })}
                         className={cn(
-                          "py-3 rounded-xl text-sm font-bold border transition-all hover:border-primary active:scale-95",
+                          "pressable-action py-3 rounded-xl text-sm font-bold border hover:border-primary",
                           formData.paymentMethod === method
                             ? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-200"
                             : "bg-white text-slate-600 border-slate-100"
@@ -219,14 +218,14 @@ Pembayaran: ${formData.paymentMethod}`;
                     <div className="space-y-3 pt-4">
                       <Button 
                         onClick={handleWhatsAppCheckout} 
-                        className="w-full rounded-2xl py-6 h-auto bg-[#25D366] hover:bg-[#20ba59] text-white font-black gap-2 text-sm uppercase tracking-widest shadow-lg shadow-green-100 transition-all transform hover:scale-[1.02] active:scale-95 border-none"
+                        className="w-full rounded-2xl py-6 h-auto bg-[#25D366] hover:bg-[#20ba59] text-white font-black gap-2 text-sm uppercase tracking-widest shadow-lg shadow-green-100 border-none"
                       >
                         <MessageCircle size={20} /> CONFIRM VIA WHATSAPP
                       </Button>
                       
                       <Button 
                         onClick={handleShopeeCheckout}
-                        className="w-full rounded-2xl py-6 h-auto bg-[#EE4D2D] hover:bg-[#d83f20] text-white font-black gap-2 text-sm uppercase tracking-widest shadow-lg shadow-orange-100 transition-all transform hover:scale-[1.02] active:scale-95 border-none"
+                        className="w-full rounded-2xl py-6 h-auto bg-[#EE4D2D] hover:bg-[#d83f20] text-white font-black gap-2 text-sm uppercase tracking-widest shadow-lg shadow-orange-100 border-none"
                       >
                         <ShoppingBag size={20} /> CONFIRM VIA SHOPEEFOOD
                       </Button>

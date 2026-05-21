@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Search, Filter, SlidersHorizontal, Star } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from '../components/ui/input';
-import { Button, buttonVariants } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { Tabs, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Button } from '../components/ui/button';
 import { DUMMY_PRODUCTS } from '../lib/data';
 import { ProductCard } from '../components/ProductCard';
 import { Product } from '../types';
@@ -49,12 +46,12 @@ export function Menu() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col lg:flex-row items-center gap-6 bg-white py-6 rounded-3xl px-4 sm:px-6 border border-orange-50 shadow-xl shadow-orange-100/20 transition-all duration-300">
+        <div className="soft-hover-action flex flex-col lg:flex-row items-center gap-6 bg-white py-6 rounded-3xl px-4 sm:px-6 border border-orange-50 shadow-xl shadow-orange-100/20">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <Input 
               placeholder="Search for dishes, drinks, or desserts..." 
-              className="pl-12 h-14 rounded-2xl border border-slate-100 bg-slate-50/50 focus-visible:ring-primary focus-visible:bg-white transition-all text-slate-900 font-medium"
+              className="motion-standard pl-12 h-14 rounded-2xl border border-slate-100 bg-slate-50/50 focus-visible:ring-primary focus-visible:bg-white text-slate-900 font-medium"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -67,7 +64,7 @@ export function Menu() {
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
                     className={cn(
-                      "px-6 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
+                      "pressable-action px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap",
                       activeCategory === cat 
                         ? "bg-slate-900 text-white shadow-lg shadow-slate-200" 
                         : "bg-white text-slate-600 border border-slate-100 hover:border-orange-200"
@@ -95,16 +92,11 @@ export function Menu() {
         {/* Grid */}
         <div>
           {filteredProducts.length > 0 ? (
-            <motion.div 
-              layout
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-            >
-              <AnimatePresence>
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </AnimatePresence>
-            </motion.div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {filteredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
           ) : (
             <div className="h-[40vh] flex flex-col items-center justify-center text-center space-y-4">
               <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">

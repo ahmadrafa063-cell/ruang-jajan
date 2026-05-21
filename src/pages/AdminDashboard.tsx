@@ -20,6 +20,7 @@ import { Plus, Pencil, Trash2, LayoutDashboard, UtensilsCrossed, Users, PieChart
 import { toast } from 'sonner';
 import { DUMMY_PRODUCTS } from '../lib/data';
 import { cn } from '../lib/utils';
+import { BrandMark } from '../components/BrandMark';
 
 export function AdminDashboard() {
   const { profile, logout } = useAuth();
@@ -97,15 +98,13 @@ export function AdminDashboard() {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 flex flex-col pt-10 transition-transform duration-300 lg:relative lg:translate-x-0 lg:z-0 lg:pt-0",
+        "motion-standard fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 flex flex-col pt-10 lg:relative lg:translate-x-0 lg:z-0 lg:pt-0",
         isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         <div className="p-8">
           <div className="flex items-center justify-between mb-12 lg:mb-8 lg:mt-8">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center font-black text-xl shadow-lg shadow-primary/20 transition-transform hover:scale-105">
-                R
-              </div>
+              <BrandMark className="shadow-lg shadow-primary/20" />
               <h2 className="font-black text-xl text-white tracking-tight">RuangJajan <span className="text-primary">Admin</span></h2>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-white hover:bg-white/10">
@@ -128,7 +127,7 @@ export function AdminDashboard() {
                   setIsSidebarOpen(false);
                 }}
                 className={cn(
-                  "w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold transition-all",
+                  "pressable-action w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold",
                   activeTab === item.id 
                     ? "bg-white/10 text-primary shadow-xl border border-white/5" 
                     : "text-slate-400 hover:text-white hover:bg-white/5"
@@ -153,7 +152,7 @@ export function AdminDashboard() {
         <div className="max-w-7xl mx-auto space-y-8 lg:space-y-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(true)} className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
+              <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(true)} className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1">
                 <span className="w-6 h-0.5 bg-slate-900 rounded-full" />
                 <span className="w-4 h-0.5 bg-slate-900 rounded-full ml-auto" />
                 <span className="w-6 h-0.5 bg-slate-900 rounded-full" />
@@ -172,7 +171,7 @@ export function AdminDashboard() {
                )}
                <Dialog>
                   <DialogTrigger>
-                    <Button className="rounded-2xl gap-2 font-black px-6 sm:px-10 py-5 sm:py-6 h-auto shadow-xl shadow-primary/20 bg-primary hover:bg-orange-600 transition-all whitespace-nowrap text-xs sm:text-sm">
+                    <Button className="rounded-2xl gap-2 font-black px-6 sm:px-10 py-5 sm:py-6 h-auto shadow-xl shadow-primary/20 bg-primary hover:bg-orange-600 whitespace-nowrap text-xs sm:text-sm">
                       <Plus size={20} className="sm:size-[24px]" /> Add Product
                     </Button>
                   </DialogTrigger>
@@ -192,10 +191,10 @@ export function AdminDashboard() {
             <div className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                  {products.map(p => (
-                   <div key={p.id} className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl hover:border-orange-50 transition-all">
+                   <div key={p.id} className="soft-hover-action bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden group hover:border-orange-50">
                       <div className="h-44 relative">
-                         <img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={p.name} />
-                         <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                         <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
+                         <div className="motion-standard absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3">
                             <Button size="icon" variant="secondary" className="rounded-xl w-10 h-10"><Pencil size={18} /></Button>
                             <Button size="icon" variant="destructive" className="rounded-xl w-10 h-10"><Trash2 size={18} /></Button>
                          </div>
@@ -205,7 +204,7 @@ export function AdminDashboard() {
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{p.category}</span>
                             <span className="text-sm font-black text-primary">Rp {p.price.toLocaleString()}</span>
                          </div>
-                         <h3 className="font-bold text-slate-900 line-clamp-1 group-hover:text-primary transition-colors">{p.name}</h3>
+                         <h3 className="motion-standard font-bold text-slate-900 line-clamp-1 group-hover:text-primary">{p.name}</h3>
                       </div>
                    </div>
                  ))}
@@ -228,7 +227,7 @@ export function AdminDashboard() {
                   { label: "New Customers", val: "156", growth: "+24", color: "text-orange-500", icon: <Users size={20} /> },
                   { label: "Success Rate", val: "98.2%", growth: "+0.5%", color: "text-primary", icon: <Star size={20} /> },
                 ].map((stat, i) => (
-                  <div key={i} className="bg-white rounded-[32px] border border-slate-100 shadow-sm p-8 space-y-6 hover:shadow-xl transition-all">
+                  <div key={i} className="soft-hover-action bg-white rounded-[32px] border border-slate-100 shadow-sm p-8 space-y-6">
                      <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center bg-slate-50", stat.color)}>
                         {stat.icon}
                      </div>

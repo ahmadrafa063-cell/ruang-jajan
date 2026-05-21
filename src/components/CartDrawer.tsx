@@ -43,13 +43,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="flex gap-4 p-3 rounded-2xl border border-slate-50 hover:border-orange-100 hover:bg-slate-50/50 transition-all group"
+                    className="soft-hover-action flex gap-4 p-3 rounded-2xl border border-slate-50 hover:border-orange-100 hover:bg-slate-50/50 group"
                   >
                     <div className="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">
                       <img 
                         src={item.image} 
                         alt={item.name} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        className="w-full h-full object-cover"
                         referrerPolicy="no-referrer"
                       />
                     </div>
@@ -62,14 +62,14 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <div className="flex items-center bg-white border border-slate-100 rounded-xl h-8 overflow-hidden shadow-sm">
                           <button 
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="px-2 hover:bg-slate-50 text-slate-400 transition-colors"
+                            className="icon-action px-2 hover:bg-slate-50 text-slate-400"
                           >
                             <Minus size={14} />
                           </button>
                           <span className="px-2 text-xs font-black w-8 text-center text-slate-900">{item.quantity}</span>
                           <button 
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="px-2 hover:bg-slate-50 text-slate-400 transition-colors"
+                            className="icon-action px-2 hover:bg-slate-50 text-slate-400"
                           >
                             <Plus size={14} />
                           </button>
@@ -79,7 +79,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="text-slate-300 hover:text-destructive hover:bg-destructive/5 h-8 w-8 rounded-lg self-start transition-all"
+                      className="text-slate-300 hover:text-destructive hover:bg-destructive/5 h-8 w-8 rounded-lg self-start"
                       onClick={() => removeFromCart(item.id)}
                     >
                       <Trash2 size={16} />
@@ -117,11 +117,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <Link 
                 to="/checkout" 
                 onClick={onClose}
-                className={cn(buttonVariants({ size: "lg" }), "w-full rounded-2xl py-8 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-200 font-bold transition-all")}
+                className={cn(buttonVariants({ size: "lg" }), "w-full rounded-2xl py-8 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-200 font-bold")}
               >
                 Proceed to Checkout <ArrowRight size={20} />
               </Link>
-              <Button variant="outline" onClick={onClose} className="w-full rounded-2xl py-8 border-slate-200 text-slate-600 font-bold hover:bg-white hover:border-orange-200 transition-all">
+              <Button variant="outline" onClick={onClose} className="w-full rounded-2xl py-8 border-slate-200 text-slate-600 font-bold hover:bg-white hover:border-orange-200">
                 Continue Shopping
               </Button>
             </div>

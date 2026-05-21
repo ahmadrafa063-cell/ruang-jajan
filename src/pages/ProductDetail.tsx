@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Star, Plus, Minus, ShoppingBag, ArrowLeft, Flame, Sparkles, Zap, MessageCircle } from 'lucide-react';
+import { Plus, Minus, ShoppingBag, ArrowLeft, Flame, Sparkles, Zap, MessageCircle } from 'lucide-react';
 import { Button, buttonVariants } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { DUMMY_PRODUCTS } from '../lib/data';
@@ -10,6 +10,7 @@ import { useCart } from '../context/CartContext';
 import { Product } from '../types';
 import { Skeleton } from '../components/ui/skeleton';
 import { cn } from '../lib/utils';
+import { StarReview } from '../components/StarReview';
 
 export function ProductDetail() {
   const { id } = useParams();
@@ -116,7 +117,7 @@ export function ProductDetail() {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="rounded-xl h-12 w-12 text-slate-400 hover:text-primary transition-colors"
+                    className="rounded-xl h-12 w-12 text-slate-400 hover:text-primary"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   >
                     <Minus size={20} />
@@ -125,34 +126,26 @@ export function ProductDetail() {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="rounded-xl h-12 w-12 text-slate-400 hover:text-primary transition-colors"
+                    className="rounded-xl h-12 w-12 text-slate-400 hover:text-primary"
                     onClick={() => setQuantity(quantity + 1)}
                   >
                     <Plus size={20} />
                   </Button>
                 </div>
-                <div className="flex items-center gap-1 px-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      size={16}
-                      className={cn(
-                        "text-yellow-400",
-                        star <= (product.rating > 0 ? Math.round(product.rating) : 5) ? "fill-yellow-400" : "fill-none"
-                      )}
-                    />
-                  ))}
-                  <span className="text-sm font-bold text-slate-700 ml-1">
-                    {product.rating > 0 ? product.rating : "5.0"}
-                  </span>
-                </div>
+                <StarReview
+                  productId={product.id}
+                  defaultRating={product.rating}
+                  size={16}
+                  className="gap-1 px-1"
+                  labelClassName="text-sm"
+                />
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 onClick={() => addToCart(product, quantity)}
-                className="flex-1 rounded-2xl py-8 h-auto bg-slate-900 hover:bg-slate-800 text-white text-lg font-black gap-2 shadow-2xl shadow-slate-200 transition-all transform hover:scale-[1.02]"
+                className="flex-1 rounded-2xl py-8 h-auto bg-slate-900 hover:bg-slate-800 text-white text-lg font-black gap-2 shadow-2xl shadow-slate-200"
               >
                 <ShoppingBag size={24} /> Add to Cart
               </Button>
@@ -168,7 +161,7 @@ Total Harga: Rp ${(product.price * quantity).toLocaleString()}
 Pembayaran: COD/Bank Transfer/QRIS`)}`}
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-2xl py-8 h-auto px-8 border-2 border-slate-100 text-slate-600 font-bold group flex items-center justify-center gap-2 hover:border-orange-200 transition-all")}
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-2xl py-8 h-auto px-8 border-2 border-slate-100 text-slate-600 font-bold group flex items-center justify-center gap-2 hover:border-orange-200")}
                 onClick={() => {
                   fetch("/api/track", {
                     method: "POST",
@@ -177,7 +170,7 @@ Pembayaran: COD/Bank Transfer/QRIS`)}`}
                   });
                 }}
               >
-                Chat WhatsApp <MessageCircle size={24} className="group-hover:text-primary transition-colors" />
+                Chat WhatsApp <MessageCircle size={24} className="motion-standard group-hover:text-primary" />
               </a>
             </div>
           </div>
