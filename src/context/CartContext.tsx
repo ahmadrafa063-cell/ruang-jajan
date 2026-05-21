@@ -42,6 +42,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     const prefix = product.category === 'Drinks' ? 'Minuman' : 'Makanan';
     toast.success(`${prefix} ${product.name} telah masuk dikeranjang`);
+
+    fetch("/api/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        event: "Add to Cart", 
+        data: { message: `Ditambahkan ke keranjang: ${product.name} (x${quantity})` } 
+      })
+    }).catch(err => console.error("Failed to track add to cart:", err));
   };
 
   const removeFromCart = (productId: string) => {

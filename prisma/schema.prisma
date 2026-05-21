@@ -72,3 +72,10 @@ model OrderItem {
   order     Order @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
 }
+
+model TrackingEvent {
+  id        Int      @id @default(autoincrement())
+  event     String
+  data      Json
+  createdAt DateTime @default(now())
+}

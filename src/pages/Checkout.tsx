@@ -51,6 +51,12 @@ Pembayaran: ${formData.paymentMethod}`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/6285240174510?text=${encodedMessage}`, '_blank');
     
+    fetch("/api/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event: "Checkout via WhatsApp", data: { message } })
+    }).catch(err => console.error("Failed to track checkout:", err));
+
     toast.success('Redirecting to WhatsApp...');
     setTimeout(() => {
       clearCart();

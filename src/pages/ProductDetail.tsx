@@ -163,10 +163,19 @@ Pembayaran: COD/Bank Transfer/QRIS`)}`}
                 rel="noopener noreferrer" 
                 className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-2xl py-8 h-auto px-8 border-2 border-slate-100 text-slate-600 font-bold group flex items-center justify-center gap-2 hover:border-orange-200")}
                 onClick={() => {
+                  const message = `Halo kak, Saya pesan
+
+Nama: 
+Alamat: 
+Menu: 
+- ${product.name} x${quantity}
+Total Harga: Rp ${(product.price * quantity).toLocaleString()}
+
+Pembayaran: COD/Bank Transfer/QRIS`;
                   fetch("/api/track", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ event: "Product WhatsApp Click", data: { product: product.name } })
+                    body: JSON.stringify({ event: "Product WhatsApp Click", data: { message } })
                   });
                 }}
               >
