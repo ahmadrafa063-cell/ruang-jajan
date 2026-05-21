@@ -60,8 +60,8 @@ export function ProductCard({ product }: ProductCardProps) {
           
           <div className="flex items-center justify-between pt-2 border-t border-slate-50">
             <div>
-               <span className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">Premium Choice</span>
-               <span className="text-sm font-black text-primary uppercase tracking-widest">Available Now</span>
+               <span className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">Premium Grade</span>
+               <span className="text-sm font-black text-primary uppercase tracking-widest">Curated Edition</span>
             </div>
             <Button 
               size="icon" 
