@@ -47,15 +47,26 @@ export function Navbar() {
       )}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="soft-hover-action flex items-center gap-2 rounded-full">
-            <BrandMark className="shadow-lg shadow-primary/20" />
-            <span className="text-2xl font-black tracking-tight text-slate-900">
-              Ruang<span className="text-primary italic">Jajan</span>
-            </span>
-          </Link>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Link to="/" className="soft-hover-action flex items-center gap-2 rounded-full">
+              <BrandMark className="shadow-lg shadow-primary/20" />
+              <span className="text-2xl font-black tracking-tight text-slate-900">
+                Ruang<span className="text-primary italic">Jajan</span>
+              </span>
+            </Link>
+          </motion.div>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="hidden md:flex items-center gap-8"
+          >
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -68,7 +79,7 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
-          </div>
+          </motion.div>
 
           {/* Actions */}
           <div className="flex items-center gap-2 md:gap-4">
@@ -111,14 +122,14 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Nav Drawer */}
+        {/* Mobile Nav Drawer - Optimized for performance */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, x: '100%' }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              transition={{ type: 'spring', damping: 30, stiffness: 250 }}
               className="fixed inset-0 top-0 left-0 w-full h-screen bg-slate-900 z-50 md:hidden flex flex-col p-8"
             >
               <div className="flex items-center justify-between mb-12">
@@ -153,13 +164,13 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
-                
+
                 {isAdmin && (
                   <>
                     <Separator className="bg-slate-800 my-4" />
                     <Link to="/admin" onClick={() => setIsOpen(false)} className="w-full">
                       <Button className="w-full rounded-2xl py-6 h-auto font-bold bg-white text-slate-900 border-none hover:bg-slate-200">
-                         Admin Dashboard
+                        Admin Dashboard
                       </Button>
                     </Link>
                   </>
@@ -167,7 +178,7 @@ export function Navbar() {
               </div>
 
               <div className="mt-auto pt-8 text-center">
-                 <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">© 2026 RUANGJAJAN HUB</p>
+                <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">© 2026 RUANGJAJAN HUB</p>
               </div>
             </motion.div>
           )}

@@ -3,15 +3,23 @@ import { Link } from 'react-router-dom';
 import { Flame, Instagram, Facebook, Twitter, Mail, Phone } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { BrandMark } from './BrandMark';
+import { motion } from 'motion/react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t border-slate-100 pt-16 pb-8 px-6 md:px-10">
+    <motion.footer
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="bg-white border-t border-slate-100 pt-16 pb-8 px-6 md:px-10"
+    >
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
         {/* Brand */}
-        <div className="space-y-6">
+        <div
+          className="space-y-6"
+        >
           <Link to="/" className="flex items-center gap-2 group">
             <BrandMark className="shadow-lg shadow-primary/20" />
             <span className="text-2xl font-black tracking-tight text-slate-900">
@@ -53,9 +61,9 @@ export function Footer() {
           <h4 className="font-black text-slate-900 text-sm uppercase tracking-widest mb-6">Newsletter</h4>
           <p className="text-sm text-slate-500 mb-4 font-medium">Subscribe to get special offers and menu updates.</p>
           <form className="flex flex-col gap-2">
-            <input 
-              type="email" 
-              placeholder="Your email address" 
+            <input
+              type="email"
+              placeholder="Your email address"
               className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-hidden"
             />
             <button className="pressable-action bg-slate-900 text-white rounded-xl px-4 py-3 text-sm font-bold hover:bg-slate-800 shadow-lg shadow-slate-200">
@@ -66,7 +74,7 @@ export function Footer() {
       </div>
 
       <Separator className="mb-8 bg-slate-100" />
-      
+
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-400">
         <div className="flex items-center gap-6">
           <span>© {currentYear} RUANGJAJAN STARTUP</span>
@@ -74,12 +82,12 @@ export function Footer() {
           <a href="#" className="motion-standard hover:text-primary font-bold uppercase tracking-widest text-[9px]">Privacy Policy</a>
         </div>
         <div className="flex items-center gap-6">
-           <div className="flex items-center gap-3">
-              <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
-              <span className="uppercase tracking-[0.2em] text-[9px]">Premium Delivery Hub</span>
-           </div>
+          <div className="flex items-center gap-3">
+            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+            <span className="uppercase tracking-[0.2em] text-[9px]">Premium Delivery Hub</span>
+          </div>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }

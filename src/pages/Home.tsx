@@ -24,8 +24,8 @@ export function Home() {
 
   React.useEffect(() => {
     let result = DUMMY_PRODUCTS.filter(p => {
-      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || 
-                          p.description.toLowerCase().includes(search.toLowerCase());
+      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
+        p.description.toLowerCase().includes(search.toLowerCase());
       const matchCategory = activeCategory === 'All' || p.category === activeCategory;
       return matchSearch && matchCategory;
     });
@@ -39,23 +39,30 @@ export function Home() {
 
 
   return (
-    <div className="overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="overflow-hidden"
+    >
       {/* Hero Section */}
       <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center pt-28 pb-16 px-4 sm:px-6 lg:px-12">
-        {/* Animated Background Orbs */}
-        <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full" />
+        {/* Animated Background Orbs - Optimized for mobile performance */}
+        <div className="hidden md:block absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full animate-pulse" style={{ willChange: "transform, opacity" }} />
+        <div className="hidden md:block absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full" style={{ willChange: "transform, opacity" }} />
 
         <div className="max-w-7xl mx-auto w-full grid grid-cols-12 gap-8 lg:gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
+            style={{ willChange: "transform, opacity" }}
             className="col-span-12 lg:col-span-7 space-y-8"
           >
             <div className="space-y-6">
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-[1.1] text-slate-900 tracking-tight">
-                Premium Selection <br/>
+                Premium Selection <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600 italic">Delivered Instant.</span>
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-lg leading-relaxed font-medium">
@@ -76,35 +83,36 @@ export function Home() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
+            style={{ willChange: "transform, opacity" }}
             className="col-span-12 lg:col-span-5 relative mt-12 lg:mt-0"
           >
             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px]"></div>
             <div className="soft-hover-action relative bg-white p-6 rounded-[40px] shadow-2xl border border-orange-50 shadow-orange-100/50 group">
               <Link to={`/product/${DUMMY_PRODUCTS[0].id}`} className="block overflow-hidden rounded-[32px] mb-6">
-                <img 
-                  src={DUMMY_PRODUCTS[0].image} 
-                  alt="Kopi Genggaman" 
-                  className="w-full h-64 md:h-80 object-cover object-center bg-black" 
+                <img
+                  src={DUMMY_PRODUCTS[0].image}
+                  alt="Kopi Genggaman"
+                  className="w-full h-64 md:h-80 object-cover object-center bg-black"
                 />
               </Link>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Drinks</span>
                 <StarReview productId={DUMMY_PRODUCTS[0].id} defaultRating={DUMMY_PRODUCTS[0].rating} size={12} />
               </div>
-              
+
               <Link to={`/product/${DUMMY_PRODUCTS[0].id}`}>
                 <h3 className="motion-standard font-bold text-slate-900 text-xl mb-1 group-hover:text-primary">Kopi Genggaman</h3>
               </Link>
               <p className="text-slate-500 text-xs line-clamp-2 mt-1 mb-4">
                 Signature premium coffee blend with a rich, smooth finish and a hint of artisan sweetness.
               </p>
-              
+
               <div className="flex items-center justify-between pt-2 border-t border-slate-50">
                 <div>
-                   <span className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">Premium Choice</span>
-                   <span className="text-sm font-black text-primary uppercase tracking-widest">Available Now</span>
+                  <span className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">Premium Choice</span>
+                  <span className="text-sm font-black text-primary uppercase tracking-widest">Available Now</span>
                 </div>
-                <div 
+                <div
                   onClick={() => addToCart(DUMMY_PRODUCTS[0])}
                   className="icon-action w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-primary shadow-xl shadow-slate-200 cursor-pointer"
                 >
@@ -112,7 +120,7 @@ export function Home() {
                 </div>
               </div>
             </div>
-            
+
             {/* Floating Badge */}
             <div className="absolute -top-6 -right-6 bg-slate-900 text-white p-6 rounded-[32px] shadow-2xl transform rotate-12 z-20">
               <p className="font-black text-xl">BEST SELLER!</p>
@@ -127,7 +135,7 @@ export function Home() {
           {/* Header */}
           <div className="space-y-6 text-center max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full w-fit uppercase tracking-wider mx-auto">
-               Explore Flavors
+              Explore Flavors
             </div>
             <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-tight">
               Find Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600 italic">Favorites</span>.
@@ -141,8 +149,8 @@ export function Home() {
           <div className="soft-hover-action flex flex-col lg:flex-row items-center gap-6 bg-white py-6 rounded-3xl px-4 sm:px-6 border border-orange-50 shadow-xl shadow-orange-100/20">
             <div className="relative flex-1 w-full">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-              <Input 
-                placeholder="Search for dishes, drinks, or desserts..." 
+              <Input
+                placeholder="Search for dishes, drinks, or desserts..."
                 className="motion-standard pl-12 h-14 rounded-2xl border border-slate-100 bg-slate-50/50 focus-visible:ring-primary focus-visible:bg-white text-slate-900 font-medium"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -150,34 +158,34 @@ export function Home() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
-               <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full lg:w-auto no-scrollbar">
-                  {categories.map(cat => (
-                    <button
-                      key={cat}
-                      onClick={() => setActiveCategory(cat)}
-                      className={cn(
-                        "pressable-action px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap",
-                        activeCategory === cat 
-                          ? "bg-slate-900 text-white shadow-lg shadow-slate-200" 
-                          : "bg-white text-slate-600 border border-slate-100 hover:border-orange-200"
-                      )}
-                    >
-                       {cat}
-                    </button>
-                  ))}
-               </div>
-
-               <div className="flex items-center gap-2 border-t sm:border-t-0 sm:border-l border-slate-100 pt-4 sm:pt-0 sm:pl-4 w-full sm:w-auto">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Sort:</span>
-                  <select 
-                    className="bg-transparent text-sm font-bold text-slate-900 focus:outline-hidden cursor-pointer flex-1"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as any)}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full lg:w-auto no-scrollbar">
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={cn(
+                      "pressable-action px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap",
+                      activeCategory === cat
+                        ? "bg-slate-900 text-white shadow-lg shadow-slate-200"
+                        : "bg-white text-slate-600 border border-slate-100 hover:border-orange-200"
+                    )}
                   >
-                    <option value="popular">Popular Choice</option>
-                    <option value="newest">Latest Arrivals</option>
-                  </select>
-               </div>
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 border-t sm:border-t-0 sm:border-l border-slate-100 pt-4 sm:pt-0 sm:pl-4 w-full sm:w-auto">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Sort:</span>
+                <select
+                  className="bg-transparent text-sm font-bold text-slate-900 focus:outline-hidden cursor-pointer flex-1"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                >
+                  <option value="popular">Popular Choice</option>
+                  <option value="newest">Latest Arrivals</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -206,6 +214,6 @@ export function Home() {
           </div>
         </div>
       </section>
-    </div>
+    </motion.div>
   );
 }

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 import { Product } from '../types';
-import { motion, AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
 import { Button, buttonVariants } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -82,7 +83,12 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden pt-16 relative">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="flex h-screen bg-slate-50 overflow-hidden pt-16 relative"
+    >
       {/* Sidebar Mobile Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -128,8 +134,8 @@ export function AdminDashboard() {
                 }}
                 className={cn(
                   "pressable-action w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold",
-                  activeTab === item.id 
-                    ? "bg-white/10 text-primary shadow-xl border border-white/5" 
+                  activeTab === item.id
+                    ? "bg-white/10 text-primary shadow-xl border border-white/5"
                     : "text-slate-400 hover:text-white hover:bg-white/5"
                 )}
               >
@@ -162,88 +168,88 @@ export function AdminDashboard() {
                 <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Welcome back, {profile.displayName}</p>
               </div>
             </div>
-            
+
             <div className="flex gap-3 sm:gap-4 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
-               {products.length === 0 && (
-                  <Button variant="outline" onClick={seedProducts} disabled={loading} className="rounded-2xl border-primary/20 text-primary hover:bg-primary/5 px-6 sm:px-8 py-5 sm:py-6 h-auto font-bold whitespace-nowrap text-xs sm:text-sm">
-                    Seed Mock Data
+              {products.length === 0 && (
+                <Button variant="outline" onClick={seedProducts} disabled={loading} className="rounded-2xl border-primary/20 text-primary hover:bg-primary/5 px-6 sm:px-8 py-5 sm:py-6 h-auto font-bold whitespace-nowrap text-xs sm:text-sm">
+                  Seed Mock Data
+                </Button>
+              )}
+              <Dialog>
+                <DialogTrigger>
+                  <Button className="rounded-2xl gap-2 font-black px-6 sm:px-10 py-5 sm:py-6 h-auto shadow-xl shadow-primary/20 bg-primary hover:bg-orange-600 whitespace-nowrap text-xs sm:text-sm">
+                    <Plus size={20} className="sm:size-[24px]" /> Add Product
                   </Button>
-               )}
-               <Dialog>
-                  <DialogTrigger>
-                    <Button className="rounded-2xl gap-2 font-black px-6 sm:px-10 py-5 sm:py-6 h-auto shadow-xl shadow-primary/20 bg-primary hover:bg-orange-600 whitespace-nowrap text-xs sm:text-sm">
-                      <Plus size={20} className="sm:size-[24px]" /> Add Product
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[600px] rounded-[40px] p-10 border-none shadow-2xl">
-                     <DialogHeader className="mb-6">
-                        <DialogTitle className="text-3xl font-black text-slate-900 tracking-tight">Global Inventory</DialogTitle>
-                     </DialogHeader>
-                     <p className="text-slate-500 py-20 text-center border-4 border-dashed border-slate-50 rounded-[32px] font-bold">
-                        Form integration coming in the next sprint.
-                     </p>
-                  </DialogContent>
-               </Dialog>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px] rounded-[40px] p-10 border-none shadow-2xl">
+                  <DialogHeader className="mb-6">
+                    <DialogTitle className="text-3xl font-black text-slate-900 tracking-tight">Global Inventory</DialogTitle>
+                  </DialogHeader>
+                  <p className="text-slate-500 py-20 text-center border-4 border-dashed border-slate-50 rounded-[32px] font-bold">
+                    Form integration coming in the next sprint.
+                  </p>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 
           {activeTab === 'products' && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                 {products.map(p => (
-                   <div key={p.id} className="soft-hover-action bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden group hover:border-orange-50">
-                      <div className="h-44 relative">
-                         <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
-                         <div className="motion-standard absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3">
-                            <Button size="icon" variant="secondary" className="rounded-xl w-10 h-10"><Pencil size={18} /></Button>
-                            <Button size="icon" variant="destructive" className="rounded-xl w-10 h-10"><Trash2 size={18} /></Button>
-                         </div>
+                {products.map(p => (
+                  <div key={p.id} className="soft-hover-action bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden group hover:border-orange-50">
+                    <div className="h-44 relative">
+                      <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
+                      <div className="motion-standard absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3">
+                        <Button size="icon" variant="secondary" className="rounded-xl w-10 h-10"><Pencil size={18} /></Button>
+                        <Button size="icon" variant="destructive" className="rounded-xl w-10 h-10"><Trash2 size={18} /></Button>
                       </div>
-                      <div className="p-6 space-y-3">
-                         <div className="flex justify-between items-center">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{p.category}</span>
-                            <span className="text-sm font-black text-primary">Rp {p.price.toLocaleString()}</span>
-                         </div>
-                         <h3 className="motion-standard font-bold text-slate-900 line-clamp-1 group-hover:text-primary">{p.name}</h3>
-                      </div>
-                   </div>
-                 ))}
-                 {products.length === 0 && !loading && (
-                    <div className="col-span-full py-32 text-center bg-white rounded-[40px] border-4 border-dashed border-slate-50 shadow-sm">
-                       <Package size={64} className="mx-auto text-slate-100 mb-6" />
-                       <h3 className="text-2xl font-black text-slate-900">Inventory Empty</h3>
-                       <p className="text-slate-400 font-bold mt-2 uppercase tracking-widest text-[10px]">Populate your database to get started</p>
                     </div>
-                 )}
+                    <div className="p-6 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{p.category}</span>
+                        <span className="text-sm font-black text-primary">Rp {p.price.toLocaleString()}</span>
+                      </div>
+                      <h3 className="motion-standard font-bold text-slate-900 line-clamp-1 group-hover:text-primary">{p.name}</h3>
+                    </div>
+                  </div>
+                ))}
+                {products.length === 0 && !loading && (
+                  <div className="col-span-full py-32 text-center bg-white rounded-[40px] border-4 border-dashed border-slate-50 shadow-sm">
+                    <Package size={64} className="mx-auto text-slate-100 mb-6" />
+                    <h3 className="text-2xl font-black text-slate-900">Inventory Empty</h3>
+                    <p className="text-slate-400 font-bold mt-2 uppercase tracking-widest text-[10px]">Populate your database to get started</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
           {activeTab === 'dashboard' && (
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-                {[
-                  { label: "Total Revenue", val: "Rp 12.5M", growth: "+12%", color: "text-green-500", icon: <PieChart size={20} /> },
-                  { label: "Active Orders", val: "42", growth: "+5", color: "text-blue-500", icon: <ShoppingBag size={20} /> },
-                  { label: "New Customers", val: "156", growth: "+24", color: "text-orange-500", icon: <Users size={20} /> },
-                  { label: "Success Rate", val: "98.2%", growth: "+0.5%", color: "text-primary", icon: <Star size={20} /> },
-                ].map((stat, i) => (
-                  <div key={i} className="soft-hover-action bg-white rounded-[32px] border border-slate-100 shadow-sm p-8 space-y-6">
-                     <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center bg-slate-50", stat.color)}>
-                        {stat.icon}
-                     </div>
-                     <div className="space-y-1">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                        <div className="flex items-end gap-3">
-                           <h3 className="text-3xl font-black text-slate-900 tracking-tight">{stat.val}</h3>
-                           <span className={cn("text-xs font-black mb-1", stat.color)}>{stat.growth}</span>
-                        </div>
-                     </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+              {[
+                { label: "Total Revenue", val: "Rp 12.5M", growth: "+12%", color: "text-green-500", icon: <PieChart size={20} /> },
+                { label: "Active Orders", val: "42", growth: "+5", color: "text-blue-500", icon: <ShoppingBag size={20} /> },
+                { label: "New Customers", val: "156", growth: "+24", color: "text-orange-500", icon: <Users size={20} /> },
+                { label: "Success Rate", val: "98.2%", growth: "+0.5%", color: "text-primary", icon: <Star size={20} /> },
+              ].map((stat, i) => (
+                <div key={i} className="soft-hover-action bg-white rounded-[32px] border border-slate-100 shadow-sm p-8 space-y-6">
+                  <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center bg-slate-50", stat.color)}>
+                    {stat.icon}
                   </div>
-                ))}
-             </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                    <div className="flex items-end gap-3">
+                      <h3 className="text-3xl font-black text-slate-900 tracking-tight">{stat.val}</h3>
+                      <span className={cn("text-xs font-black mb-1", stat.color)}>{stat.growth}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </main>
-    </div>
+    </motion.div>
   );
 }

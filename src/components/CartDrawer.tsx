@@ -34,7 +34,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
         <ScrollArea className="flex-1 px-6">
           {cart.length > 0 ? (
-            <div className="py-6 space-y-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="py-6 space-y-6"
+            >
               <AnimatePresence mode="popLayout">
                 {cart.map((item) => (
                   <motion.div
@@ -46,9 +52,9 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     className="soft-hover-action flex gap-4 p-3 rounded-2xl border border-slate-50 hover:border-orange-100 hover:bg-slate-50/50 group"
                   >
                     <div className="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
+                      <img
+                        src={item.image}
+                        alt={item.name}
                         className="w-full h-full object-cover"
                         referrerPolicy="no-referrer"
                       />
@@ -60,14 +66,14 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       </div>
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center bg-white border border-slate-100 rounded-xl h-8 overflow-hidden shadow-sm">
-                          <button 
+                          <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             className="icon-action px-2 hover:bg-slate-50 text-slate-400"
                           >
                             <Minus size={14} />
                           </button>
                           <span className="px-2 text-xs font-black w-8 text-center text-slate-900">{item.quantity}</span>
-                          <button 
+                          <button
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                             className="icon-action px-2 hover:bg-slate-50 text-slate-400"
                           >
@@ -76,9 +82,9 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         </div>
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="text-slate-300 hover:text-destructive hover:bg-destructive/5 h-8 w-8 rounded-lg self-start"
                       onClick={() => removeFromCart(item.id)}
                     >
@@ -87,7 +93,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   </motion.div>
                 ))}
               </AnimatePresence>
-            </div>
+            </motion.div>
           ) : (
             <div className="h-[60vh] flex flex-col items-center justify-center text-center space-y-4">
               <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center">
@@ -114,8 +120,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-3 pt-1">
-              <Link 
-                to="/checkout" 
+              <Link
+                to="/checkout"
                 onClick={onClose}
                 className={cn(buttonVariants({ size: "lg" }), "w-full rounded-2xl py-8 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-200 font-bold")}
               >

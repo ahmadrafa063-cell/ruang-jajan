@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { Product } from '../types';
 import { Card, CardContent, CardFooter } from './ui/card';
 import { Badge } from './ui/badge';
@@ -25,13 +26,18 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="motion-standard"
+    >
       <Card className="bg-white rounded-[32px] p-4 border border-slate-100 shadow-sm flex flex-col h-full group">
         <div className="relative h-48 mb-4 overflow-hidden rounded-2xl">
           <Link to={`/product/${product.id}`} className="block h-full">
-            <img 
-              src={product.image} 
-              alt={product.name} 
+            <img
+              src={product.image}
+              alt={product.name}
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />
@@ -44,27 +50,27 @@ export function ProductCard({ product }: ProductCardProps) {
             ))}
           </div>
         </div>
-        
+
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{product.category}</span>
             <StarReview productId={product.id} defaultRating={product.rating} size={12} />
           </div>
-          
+
           <Link to={`/product/${product.id}`}>
             <h3 className="font-bold text-slate-900 text-lg line-clamp-1">{product.name}</h3>
           </Link>
           <p className="text-slate-500 text-xs line-clamp-2 mt-1 mb-4 flex-1">
             {product.description}
           </p>
-          
+
           <div className="flex items-center justify-between pt-2 border-t border-slate-50">
             <div>
-               <span className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">Premium Grade</span>
-               <span className="text-sm font-black text-primary uppercase tracking-widest">Curated Edition</span>
+              <span className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">Premium Grade</span>
+              <span className="text-sm font-black text-primary uppercase tracking-widest">Curated Edition</span>
             </div>
-            <Button 
-              size="icon" 
+            <Button
+              size="icon"
               className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-slate-200"
               onClick={() => addToCart(product)}
             >
@@ -73,6 +79,6 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
       </Card>
-    </div>
+    </motion.div>
   );
 }
