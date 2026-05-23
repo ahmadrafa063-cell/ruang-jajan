@@ -4,9 +4,12 @@ import { welcomeEmail } from "@/lib/email-templates";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
+    console.log("CHECKOUT TRIGGERED")
+
     try {
 
         const body = await req.json();
+        console.log("ORDER PROCESSING STARTED")
 
         const order = await prisma.order.create({
             data: {

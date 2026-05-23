@@ -21,30 +21,37 @@ if (!SMTP_USER || !SMTP_PASS) {
 }
 
 // =====================================================
-// NODERMAILER TRANSPORTER (single instance, reused)
+// CREATE TRANSPORTER (inside function for Vercel compatibility)
 // =====================================================
 
-const transporter = nodemailer.createTransport({
-     host: SMTP_HOST,
-     port: SMTP_PORT,
-     secure: false, // true for 465, false for other ports
-     auth: {
-          user: SMTP_USER,
-          pass: SMTP_PASS,
-     },
-     tls: {
-          rejectUnauthorized: true,
-     },
-     connectionTimeout: 10000,
-     greetingTimeout: 10000,
-     socketTimeout: 10000,
-});
+function createTransporter() {
+     return nodemailer.createTransport({
+          host: SMTP_HOST,
+          port: SMTP_PORT,
+          secure: false,
+          auth: {
+               user: SMTP_USER,
+               pass: SMTP_PASS,
+          },
+          tls: {
+               rejectUnauthorized: true,
+          },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 10000,
+     });
+}
 
 // =====================================================
 // SEND EMAIL (single reusable function)
 // =====================================================
 
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+     console.log("EMAIL FUNCTION CALLED")
+     console.log("TRYING TO SEND EMAIL")
+
+     const transporter = createTransporter();
+
      const mailOptions = {
           from: `"Ruang Jajan" <${SMTP_FROM}>`,
           to,
@@ -54,9 +61,11 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
 
      try {
           const info = await transporter.sendMail(mailOptions);
+          console.log("EMAIL SENT SUCCESSFULLY")
           console.log(`✅ Email sent to ${to}: ${info.messageId}`);
           return true;
      } catch (error: any) {
+          console.error("EMAIL ERROR:", error)
           console.error(`❌ Email failed to ${to}:`, error.message);
           return false;
      }
@@ -122,4 +131,5 @@ export async function testSendEmail(): Promise<void> {
 // EXPORTS
 // =====================================================
 
-export { transporter };
+// No exports needed - sendEmail() is the main function
+// createTransporter() is internal only
