@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { transporter } from "@/lib/mailer";
+import { sendEmail } from "@/lib/email";
+import { welcomeEmail } from "@/lib/email-templates";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -15,15 +16,11 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: process.env.EMAIL_USER,
-            subject: "🛒 Order Baru",
-            html: `
-        <h1>Order Baru Masuk</h1>
-        <p>Total: Rp ${body.totalPrice}</p>
-      `,
-        });
+        // Send welcome email to user (non-blocking)
+        if (body.email) {
+            const { subject, html } = welcomeEmail(body.name || 'Customer', body.email);
+            sendEmail(body.email, subject, html).catch(console.error);
+        }
 
         return NextResponse.json({
             success: true,

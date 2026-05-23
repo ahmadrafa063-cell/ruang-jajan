@@ -3,8 +3,7 @@
 // Gmail SMTP with Nodemailer
 // =====================================================
 
-import nodemailer from 'nodemailer';
-import { EmailTemplate, EmailTemplateType } from './email-templates';
+import * as nodemailer from 'nodemailer';
 
 // =====================================================
 // EMAIL CONFIGURATION
@@ -12,12 +11,17 @@ import { EmailTemplate, EmailTemplateType } from './email-templates';
 
 const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587');
-const SMTP_USER = process.env.SMTP_USER || 'ahmadrafa063@gmail.com';
+const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
 const SMTP_FROM = process.env.SMTP_FROM || 'ahmadrafa063@gmail.com';
 
+// Validate environment variables at startup
+if (!SMTP_USER || !SMTP_PASS) {
+     console.warn('⚠️  SMTP credentials not configured. Email sending will fail.');
+}
+
 // =====================================================
-// NODERMAILER TRANSPORTER
+// NODERMAILER TRANSPORTER (single instance, reused)
 // =====================================================
 
 const transporter = nodemailer.createTransport({
@@ -37,250 +41,85 @@ const transporter = nodemailer.createTransport({
 });
 
 // =====================================================
-// EMAIL SENDER
+// SEND EMAIL (single reusable function)
 // =====================================================
 
-interface SendEmailOptions {
-     to: string;
-     subject: string;
-     html: string;
-     text?: string;
-     from?: string;
-     attachments?: Array<{
-          filename: string;
-          path: string;
-          cid?: string;
-     }>;
-}
-
-interface EmailResult {
-     success: boolean;
-     messageId?: string;
-     error?: string;
-     retry?: boolean;
-}
-
-async function sendEmail(options: SendEmailOptions): Promise<EmailResult> {
-     const { to, subject, html, text, from = SMTP_FROM, attachments } = options;
-
-     // Validate SMTP configuration
-     if (!SMTP_PASS) {
-          console.error('❌ SMTP password not configured');
-          return { success: false, error: 'SMTP password not configured' };
-     }
-
+export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
      const mailOptions = {
-          from: `"Ruang Jajan" <${from}>`,
+          from: `"Ruang Jajan" <${SMTP_FROM}>`,
           to,
           subject,
           html,
-          text: text || 'Please view this email in a browser that supports HTML.',
-          attachments: attachments || [],
      };
 
      try {
           const info = await transporter.sendMail(mailOptions);
           console.log(`✅ Email sent to ${to}: ${info.messageId}`);
-          return { success: true, messageId: info.messageId };
-     } catch (error: any) {
-          console.error(`❌ Email failed to ${to}:`, error.message);
-
-          // Check for retryable errors
-          const retryableErrors = [
-               'ECONNRESET',
-               'ETIMEDOUT',
-               'ECONNREFUSED',
-               'EHOSTUNREACH',
-          ];
-
-          const isRetryable = retryableErrors.some(err =>
-               error.message?.includes(err) || error.code?.includes(err)
-          );
-
-          return {
-               success: false,
-               error: error.message,
-               retry: isRetryable
-          };
-     }
-}
-
-// =====================================================
-// EMAIL TEMPLATES
-// =====================================================
-
-function renderTemplate(type: EmailTemplateType, data: any): any {
-     const template = EmailTemplate[type];
-     if (!template) {
-          throw new Error(`Unknown email template: ${type}`);
-     }
-     return template(data);
-}
-
-// =====================================================
-// EMAIL SENDER WITH TEMPLATES
-// =====================================================
-
-interface SendEmailWithTemplateOptions {
-     to: string;
-     template: EmailTemplateType;
-     data: any;
-     attachments?: Array<{
-          filename: string;
-          path: string;
-          cid?: string;
-     }>;
-}
-
-async function sendEmailWithTemplate(options: SendEmailWithTemplateOptions): Promise<EmailResult> {
-     const { to, template, data, attachments } = options;
-
-     try {
-          const templateGenerator = EmailTemplate[template];
-          if (!templateGenerator) {
-               throw new Error(`Unknown email template: ${template}`);
-          }
-
-          const html = templateGenerator(data);
-
-          // Extract subject from the HTML content
-          const subjectMatch = html.match(/<title>([^<]+)<\/title>/);
-          const subject = subjectMatch ? subjectMatch[1] : 'Ruang Jajan Email';
-
-          return await sendEmail({
-               to,
-               subject,
-               html,
-               attachments,
-          });
-     } catch (error: any) {
-          console.error(`❌ Failed to render template ${template}:`, error.message);
-          return { success: false, error: error.message };
-     }
-}
-
-// =====================================================
-// EMAIL SENDER WITH RETRY
-// =====================================================
-
-interface SendEmailWithRetryOptions {
-     to: string;
-     subject: string;
-     html: string;
-     text?: string;
-     from?: string;
-     attachments?: Array<{
-          filename: string;
-          path: string;
-          cid?: string;
-     }>;
-     maxRetries?: number;
-     retryDelay?: number;
-}
-
-async function sendEmailWithRetry(options: SendEmailWithRetryOptions): Promise<EmailResult> {
-     const {
-          to,
-          subject,
-          html,
-          text,
-          from,
-          attachments,
-          maxRetries = 3,
-          retryDelay = 1000
-     } = options;
-
-     let lastError: string | undefined;
-     let retryCount = 0;
-
-     while (retryCount < maxRetries) {
-          const result = await sendEmail({ to, subject, html, text, from, attachments });
-
-          if (result.success) {
-               return result;
-          }
-
-          lastError = result.error;
-
-          if (!result.retry) {
-               // Non-retryable error
-               return result;
-          }
-
-          retryCount++;
-          console.log(`⏳ Email retry ${retryCount}/${maxRetries} for ${to}...`);
-
-          if (retryCount < maxRetries) {
-               await new Promise(resolve => setTimeout(resolve, retryDelay * retryCount));
-          }
-     }
-
-     return {
-          success: false,
-          error: `Failed after ${maxRetries} retries: ${lastError}`
-     };
-}
-
-// =====================================================
-// EMAIL SENDER WITH TEMPLATES AND RETRY
-// =====================================================
-
-async function sendEmailWithTemplateAndRetry(options: SendEmailWithTemplateOptions): Promise<EmailResult> {
-     const { to, template, data, attachments } = options;
-
-     try {
-          const templateGenerator = EmailTemplate[template];
-          if (!templateGenerator) {
-               throw new Error(`Unknown email template: ${template}`);
-          }
-
-          const html = templateGenerator(data);
-
-          // Extract subject from the HTML content
-          const subjectMatch = html.match(/<title>([^<]+)<\/title>/);
-          const subject = subjectMatch ? subjectMatch[1] : 'Ruang Jajan Email';
-
-          return await sendEmailWithRetry({
-               to,
-               subject,
-               html,
-               attachments,
-               maxRetries: 3,
-               retryDelay: 1000,
-          });
-     } catch (error: any) {
-          console.error(`❌ Failed to render template ${template}:`, error.message);
-          return { success: false, error: error.message };
-     }
-}
-
-// =====================================================
-// TEST SMTP CONNECTION
-// =====================================================
-
-async function testSmtpConnection(): Promise<boolean> {
-     try {
-          await transporter.verify();
-          console.log('✅ SMTP connection verified successfully');
           return true;
      } catch (error: any) {
-          console.error('❌ SMTP connection failed:', error.message);
+          console.error(`❌ Email failed to ${to}:`, error.message);
           return false;
      }
+}
+
+// =====================================================
+// TEST EMAIL (dev only)
+// =====================================================
+
+export async function testSendEmail(): Promise<void> {
+     const testEmail = process.env.TEST_EMAIL || 'ahmadrafa063@gmail.com';
+     const subject = '📧 TEST EMAIL - Ruang Jajan';
+     const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test Email</title>
+</head>
+<body style="margin:0; padding:0; font-family:Arial, sans-serif; background-color:#f8f9fa;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8f9fa;">
+    <tr>
+      <td align="center" style="padding:40px 20px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+          <tr>
+            <td style="background:linear-gradient(135deg, #ff7a00 0%, #ff9a3d 100%); padding:40px 30px; text-align:center;">
+              <h1 style="color:#ffffff; font-size:28px; margin:0;">Ruang Jajan</h1>
+              <p style="color:#ffffff; font-size:16px; opacity:0.9; margin:8px 0 0;">Premium Food & Beverage Experience</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:40px 30px;">
+              <h2 style="font-size:20px; color:#1a1a1a; margin-bottom:20px;">Test Email</h2>
+              <p style="font-size:16px; color:#4a4a4a; line-height:1.6; margin-bottom:20px;">
+                This is a test email from Ruang Jajan.
+              </p>
+              <p style="font-size:16px; color:#4a4a4a; line-height:1.6; margin-bottom:20px;">
+                <strong>SMTP Host:</strong> ${SMTP_HOST}<br>
+                <strong>SMTP Port:</strong> ${SMTP_PORT}<br>
+                <strong>SMTP User:</strong> ${SMTP_USER}<br>
+                <strong>To:</strong> ${testEmail}
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#f8f9fa; padding:40px 30px; text-align:center; border-top:1px solid #e0e0e0;">
+              <p style="font-size:14px; color:#666; margin-bottom:12px;">© ${new Date().getFullYear()} Ruang Jajan. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+     `.trim();
+
+     const success = await sendEmail(testEmail, subject, html);
+     console.log(`📧 Test email result: ${success ? '✅ SUCCESS' : '❌ FAILED'}`);
 }
 
 // =====================================================
 // EXPORTS
 // =====================================================
 
-export {
-     sendEmail,
-     sendEmailWithTemplate,
-     sendEmailWithRetry,
-     sendEmailWithTemplateAndRetry,
-     testSmtpConnection,
-     transporter,
-     renderTemplate,
-};
-
-export type { SendEmailOptions, SendEmailWithTemplateOptions, SendEmailWithRetryOptions };
+export { transporter };
