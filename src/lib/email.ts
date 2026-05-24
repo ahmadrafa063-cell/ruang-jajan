@@ -9,15 +9,26 @@ import * as nodemailer from 'nodemailer';
 // EMAIL CONFIGURATION
 // =====================================================
 
+/* IMPORTANT - Gmail SMTP requires App Password, NOT regular password
+   Setup: Google Account → Security → 2-Step Verification → App Passwords
+   Generate password for "Mail" → use that 16-char password as SMTP_PASS
+   
+   SMTP settings for Gmail:
+   - SMTP_HOST = smtp.gmail.com
+   - SMTP_PORT = 587 (or 465 with secure: true)
+   - SMTP_USER = your.email@gmail.com
+   - SMTP_PASS = xxxx xxxx xxxx xxxx (16-char App Password, no spaces in env var)
+*/
+
 const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587');
 const SMTP_USER = process.env.SMTP_USER || '';
-const SMTP_PASS = process.env.SMTP_PASS || '';
+const SMTP_PASS = process.env.SMTP_PASS?.replace(/\s/g, '') || ''; // Remove spaces from App Password
 const SMTP_FROM = process.env.SMTP_FROM || 'ahmadrafa063@gmail.com';
 
 // Validate environment variables at startup
 if (!SMTP_USER || !SMTP_PASS) {
-     console.warn('⚠️  SMTP credentials not configured. Email sending will fail.');
+  console.warn('[EMAIL] ⚠️  SMTP credentials not configured. Email sending will fail.');
 }
 
 // =====================================================
@@ -25,21 +36,21 @@ if (!SMTP_USER || !SMTP_PASS) {
 // =====================================================
 
 function createTransporter() {
-     return nodemailer.createTransport({
-          host: SMTP_HOST,
-          port: SMTP_PORT,
-          secure: false,
-          auth: {
-               user: SMTP_USER,
-               pass: SMTP_PASS,
-          },
-          tls: {
-               rejectUnauthorized: true,
-          },
-          connectionTimeout: 10000,
-          greetingTimeout: 10000,
-          socketTimeout: 10000,
-     });
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: false,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+    },
+    tls: {
+      rejectUnauthorized: true,
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
+  });
 }
 
 // =====================================================
@@ -47,28 +58,33 @@ function createTransporter() {
 // =====================================================
 
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
-     console.log("EMAIL FUNCTION CALLED")
-     console.log("TRYING TO SEND EMAIL")
+  console.log("[EMAIL] Attempting to send...")
+  console.log("[EMAIL] SMTP_HOST:", process.env.SMTP_HOST)
+  console.log("[EMAIL] SMTP_PORT:", process.env.SMTP_PORT)
+  console.log("[EMAIL] SMTP_USER:", process.env.SMTP_USER ? 'SET' : 'MISSING')
+  console.log("[EMAIL] SMTP_PASS:", process.env.SMTP_PASS ? 'SET' : 'MISSING')
+  console.log("[EMAIL] TO:", to)
+  console.log("[EMAIL] SUBJECT:", subject)
 
-     const transporter = createTransporter();
+  const transporter = createTransporter();
 
-     const mailOptions = {
-          from: `"Ruang Jajan" <${SMTP_FROM}>`,
-          to,
-          subject,
-          html,
-     };
+  const mailOptions = {
+    from: `"Ruang Jajan" <${SMTP_FROM}>`,
+    to,
+    subject,
+    html,
+  };
 
-     try {
-          const info = await transporter.sendMail(mailOptions);
-          console.log("EMAIL SENT SUCCESSFULLY")
-          console.log(`✅ Email sent to ${to}: ${info.messageId}`);
-          return true;
-     } catch (error: any) {
-          console.error("EMAIL ERROR:", error)
-          console.error(`❌ Email failed to ${to}:`, error.message);
-          return false;
-     }
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("[EMAIL] Success! Sent to:", to)
+    console.log("[EMAIL] Message ID:", info.messageId)
+    return true;
+  } catch (error: any) {
+    console.error("[EMAIL] Failed:", error.message)
+    console.error("[EMAIL] Full error:", JSON.stringify(error))
+    return false;
+  }
 }
 
 // =====================================================
@@ -76,9 +92,9 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
 // =====================================================
 
 export async function testSendEmail(): Promise<void> {
-     const testEmail = process.env.TEST_EMAIL || 'ahmadrafa063@gmail.com';
-     const subject = '📧 TEST EMAIL - Ruang Jajan';
-     const html = `
+  const testEmail = process.env.TEST_EMAIL || 'ahmadrafa063@gmail.com';
+  const subject = '📧 TEST EMAIL - Ruang Jajan';
+  const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -123,8 +139,8 @@ export async function testSendEmail(): Promise<void> {
 </html>
      `.trim();
 
-     const success = await sendEmail(testEmail, subject, html);
-     console.log(`📧 Test email result: ${success ? '✅ SUCCESS' : '❌ FAILED'}`);
+  const success = await sendEmail(testEmail, subject, html);
+  console.log(`📧 Test email result: ${success ? '✅ SUCCESS' : '❌ FAILED'}`);
 }
 
 // =====================================================

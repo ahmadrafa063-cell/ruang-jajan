@@ -1,15 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
-import { welcomeEmail } from "@/lib/email-templates";
+import { orderSuccessEmail } from "@/lib/email-templates";
 import { NextRequest, NextResponse } from "next/server";
 
+export const maxDuration = 30;
+
 export async function POST(req: NextRequest) {
-    console.log("CHECKOUT TRIGGERED")
+    console.log("[CHECKOUT] TRIGGERED")
 
     try {
-
         const body = await req.json();
-        console.log("ORDER PROCESSING STARTED")
+        console.log("[CHECKOUT] ORDER PROCESSING STARTED")
 
         const order = await prisma.order.create({
             data: {
@@ -19,10 +20,22 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        // Send welcome email to user (non-blocking)
+        console.log("[CHECKOUT] ORDER CREATED:", order.id)
+
+        // Send order confirmation email to user
         if (body.email) {
-            const { subject, html } = welcomeEmail(body.name || 'Customer', body.email);
-            sendEmail(body.email, subject, html).catch(console.error);
+            console.log("[EMAIL] Sending order confirmation to:", body.email)
+            const { subject, html } = orderSuccessEmail(
+                body.name || 'Customer',
+                order.id,
+                new Date(),
+                body.totalPrice,
+                []
+            );
+            await sendEmail(body.email, subject, html);
+            console.log("[EMAIL] Order confirmation sent successfully")
+        } else {
+            console.log("[EMAIL] No email provided, skipping notification")
         }
 
         return NextResponse.json({
@@ -30,13 +43,13 @@ export async function POST(req: NextRequest) {
             order,
         });
 
-    } catch (error) {
-
-        console.log(error);
+    } catch (error: any) {
+        console.error("[CHECKOUT ERROR]:", error.message)
+        console.error("[CHECKOUT FULL ERROR]:", JSON.stringify(error))
 
         return NextResponse.json({
             success: false,
-            error,
-        });
+            error: error.message,
+        }, { status: 500 });
     }
 }

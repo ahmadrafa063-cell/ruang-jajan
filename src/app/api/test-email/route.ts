@@ -1,11 +1,13 @@
 // ⚠️ DEVELOPMENT ONLY — Remove before final production deploy
 import { sendEmail } from "@/lib/email";
 
+export const maxDuration = 30;
+
 export async function GET() {
-     try {
-          const to = process.env.SMTP_USER || 'ahmadrafa063@gmail.com';
-          const subject = '✅ Test Email — Checkout System';
-          const html = `
+  try {
+    const to = process.env.SMTP_USER || 'ahmadrafa063@gmail.com';
+    const subject = '✅ Test Email from Vercel';
+    const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,18 +49,26 @@ export async function GET() {
 </html>
         `.trim();
 
-          await sendEmail(to, subject, html);
+    const success = await sendEmail(to, subject, html);
 
-          return Response.json({
-               success: true,
-               message: 'Test email sent!',
-               to,
-          });
-     } catch (error: any) {
-          console.error('TEST EMAIL FAILED:', error);
-          return Response.json({
-               success: false,
-               error: error.message,
-          }, { status: 500 });
-     }
+    if (success) {
+      return Response.json({
+        success: true,
+        message: 'Test email sent!',
+        to,
+      });
+    } else {
+      return Response.json({
+        success: false,
+        message: 'Email failed to send',
+      }, { status: 500 });
+    }
+  } catch (error: any) {
+    console.error('[TEST EMAIL FAILED]:', error.message)
+    console.error('[TEST EMAIL FULL ERROR]:', JSON.stringify(error))
+    return Response.json({
+      success: false,
+      error: error.message,
+    }, { status: 500 });
+  }
 }
