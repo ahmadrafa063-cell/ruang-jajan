@@ -21,7 +21,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
+      <SheetContent className="w-full sm:max-w-md flex flex-col p-0 transition-transform duration-300 ease-in-out">
         <SheetHeader className="p-6 border-b border-orange-50">
           <SheetTitle className="flex items-center gap-2 text-2xl font-black text-slate-900">
             <ShoppingBag size={24} className="text-primary" />
@@ -38,10 +38,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.15 }}
               className="py-6 space-y-6"
             >
-              <AnimatePresence mode="popLayout">
+              <div className="space-y-4">
                 {cart.map((item) => (
                   <motion.div
                     key={item.id}
@@ -49,7 +49,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.15 }}
                     className="soft-hover-action flex gap-4 p-3 rounded-2xl border border-slate-50 hover:border-orange-100 hover:bg-slate-50/50 group"
                   >
                     <div className="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">
@@ -93,7 +93,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     </Button>
                   </motion.div>
                 ))}
-              </AnimatePresence>
+              </div>
             </motion.div>
           ) : (
             <div className="h-[60vh] flex flex-col items-center justify-center text-center space-y-4">

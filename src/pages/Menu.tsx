@@ -31,12 +31,7 @@ export function Menu() {
   }, [search, activeCategory, sortBy]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className="min-h-screen pt-24 pb-16 px-4 sm:px-6 md:px-8"
-    >
+    <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 md:px-8">
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <div className="space-y-6 text-center max-w-2xl mx-auto">
@@ -119,6 +114,6 @@ export function Menu() {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

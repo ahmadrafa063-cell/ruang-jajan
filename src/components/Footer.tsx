@@ -9,12 +9,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <motion.footer
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="bg-white border-t border-slate-100 pt-16 pb-8 px-6 md:px-10"
-    >
+    <footer className="bg-white border-t border-slate-100 pt-16 pb-8 px-6 md:px-10">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
         {/* Brand */}
         <div
@@ -76,28 +71,18 @@ export function Footer() {
       <Separator className="mb-8 bg-slate-100" />
 
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-400">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-          className="flex items-center gap-6"
-        >
+        <div className="flex items-center gap-6">
           <span>© {currentYear} RUANGJAJAN STARTUP</span>
           <a href="#" className="motion-standard hover:text-primary font-bold uppercase tracking-widest text-[9px]">Terms of Service</a>
           <a href="#" className="motion-standard hover:text-primary font-bold uppercase tracking-widest text-[9px]">Privacy Policy</a>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-          className="flex items-center gap-6"
-        >
+        </div>
+        <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+            <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
             <span className="uppercase tracking-[0.2em] text-[9px]">Premium Delivery Hub</span>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.footer>
+    </footer>
   );
 }

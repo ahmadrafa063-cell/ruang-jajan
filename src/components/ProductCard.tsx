@@ -27,21 +27,20 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      transition={{ duration: 0.25, ease: [0.25, 1, 0.5, 1] }}
       className="motion-standard"
     >
       <Card className="bg-white rounded-[32px] p-4 border border-slate-100 shadow-sm flex flex-col h-full group">
         <div className="relative h-48 mb-4 overflow-hidden rounded-2xl">
           <Link to={`/product/${product.id}`} className="block h-full">
-            <motion.img
+            <img
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-500 ease-out md:group-hover:scale-105"
+              loading="lazy"
               referrerPolicy="no-referrer"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
             />
           </Link>
           <div className="absolute top-2 left-2 flex flex-wrap gap-1">

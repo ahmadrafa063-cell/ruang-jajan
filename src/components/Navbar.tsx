@@ -19,10 +19,35 @@ export function Navbar() {
   const { itemCount } = useCart();
   const location = useLocation();
 
+  // Optimize scroll handler with useCallback and throttle
   React.useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    let isMounted = true;
+    const handleScroll = () => {
+      if (isMounted) {
+        setIsScrolled(window.scrollY > 20);
+      }
+    };
+
+    // Use requestAnimationFrame for smoother scroll handling
+    let scrollTimeout: number;
+    const handleScrollThrottled = () => {
+      if (scrollTimeout) {
+        cancelAnimationFrame(scrollTimeout);
+      }
+      scrollTimeout = requestAnimationFrame(() => {
+        handleScroll();
+      });
+    };
+
+    window.addEventListener('scroll', handleScrollThrottled);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('scroll', handleScrollThrottled);
+      if (scrollTimeout) {
+        cancelAnimationFrame(scrollTimeout);
+      }
+    };
   }, []);
 
   const navLinks = [
@@ -47,32 +72,23 @@ export function Navbar() {
       )}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <div>
             <Link to="/" className="soft-hover-action flex items-center gap-2 rounded-full">
               <BrandMark className="shadow-lg shadow-primary/20" />
               <span className="text-2xl font-black tracking-tight text-slate-900">
                 Ruang<span className="text-primary italic">Jajan</span>
               </span>
             </Link>
-          </motion.div>
+          </div>
 
           {/* Desktop Nav */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+          <div
             className="hidden md:flex items-center gap-8"
           >
             {navLinks.map((link, i) => (
-              <motion.div
+              <div
                 key={link.name}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.1 }}
+                className="motion-standard"
               >
                 <Link
                   to={link.href}
@@ -83,9 +99,9 @@ export function Navbar() {
                 >
                   {link.name}
                 </Link>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-2 md:gap-4">
@@ -135,15 +151,10 @@ export function Navbar() {
               initial={{ opacity: 0, x: '100%' }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 250 }}
-              className="fixed inset-0 top-0 left-0 w-full h-screen bg-slate-900 z-50 md:hidden flex flex-col p-8"
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-0 top-0 left-0 w-full h-screen bg-slate-900 z-50 md:hidden flex flex-col p-8 will-change-transform"
             >
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="flex items-center justify-between mb-12"
-              >
+              <div className="flex items-center justify-between mb-12">
                 <Link to="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
                   <BrandMark />
                   <span className="text-2xl font-black tracking-tight text-white">
@@ -153,15 +164,13 @@ export function Navbar() {
                 <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:bg-white/10 rounded-full">
                   <X size={28} />
                 </Button>
-              </motion.div>
+              </div>
 
               <div className="flex flex-col gap-6">
                 {navLinks.map((link, i) => (
-                  <motion.div
+                  <div
                     key={link.name}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
+                    className="motion-standard"
                   >
                     <Link
                       to={link.href}
@@ -173,7 +182,7 @@ export function Navbar() {
                     >
                       {link.name}
                     </Link>
-                  </motion.div>
+                  </div>
                 ))}
 
                 {isAdmin && (
@@ -194,7 +203,7 @@ export function Navbar() {
             </motion.div>
           )}
         </AnimatePresence>
-      </nav>
+      </nav >
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
