@@ -36,13 +36,16 @@ if (!SMTP_USER || !SMTP_PASS) {
 // =====================================================
 
 function createTransporter() {
+  const smtpPort = Number(process.env.SMTP_PORT) || 587;
+  const smtpPass = process.env.SMTP_PASS?.replace(/\s/g, '') || '';
+
   return nodemailer.createTransport({
     host: SMTP_HOST,
-    port: SMTP_PORT,
+    port: smtpPort,
     secure: false,
     auth: {
       user: SMTP_USER,
-      pass: SMTP_PASS,
+      pass: smtpPass,
     },
     tls: {
       rejectUnauthorized: true,
@@ -58,11 +61,21 @@ function createTransporter() {
 // =====================================================
 
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+  // ENV CHECK - Log all values to debug Vercel env issues
+  const smtpPassClean = process.env.SMTP_PASS?.replace(/\s/g, '') || '';
+  console.log('[ENV CHECK]', {
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    user: process.env.SMTP_USER,
+    passLength: smtpPassClean.length,
+    from: process.env.SMTP_FROM,
+  })
+
   console.log("[EMAIL] Attempting to send...")
   console.log("[EMAIL] SMTP_HOST:", process.env.SMTP_HOST)
   console.log("[EMAIL] SMTP_PORT:", process.env.SMTP_PORT)
   console.log("[EMAIL] SMTP_USER:", process.env.SMTP_USER ? 'SET' : 'MISSING')
-  console.log("[EMAIL] SMTP_PASS:", process.env.SMTP_PASS ? 'SET' : 'MISSING')
+  console.log("[EMAIL] SMTP_PASS:", smtpPassClean ? 'SET (length: ' + smtpPassClean.length + ')' : 'MISSING')
   console.log("[EMAIL] TO:", to)
   console.log("[EMAIL] SUBJECT:", subject)
 
