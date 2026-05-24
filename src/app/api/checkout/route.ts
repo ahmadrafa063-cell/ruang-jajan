@@ -1,55 +1,57 @@
-import { prisma } from "@/lib/prisma";
-import { sendEmail } from "@/lib/email";
-import { orderSuccessEmail } from "@/lib/email-templates";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { sendEmail } from '@/lib/email';
+import { generateCheckoutEmail } from './email';
 
-export const maxDuration = 30;
+// =====================================================
+// CHECKOUT EMAIL API
+// =====================================================
 
-export async function POST(req: NextRequest) {
-    console.log("[CHECKOUT] TRIGGERED")
-
+export async function POST(request: NextRequest) {
     try {
-        const body = await req.json();
-        console.log("[CHECKOUT] ORDER PROCESSING STARTED")
+        const body = await request.json();
+        const { customerName, customerPhone, customerAddress, items, total, paymentMethod } = body;
 
-        const order = await prisma.order.create({
-            data: {
-                userId: body.userId,
-                totalPrice: body.totalPrice,
-                status: "paid",
-            },
-        });
-
-        console.log("[CHECKOUT] ORDER CREATED:", order.id)
-
-        // Send order confirmation email to user
-        if (body.email) {
-            console.log("[EMAIL] Sending order confirmation to:", body.email)
-            const { subject, html } = orderSuccessEmail(
-                body.name || 'Customer',
-                order.id,
-                new Date(),
-                body.totalPrice,
-                []
+        // Validate required fields
+        if (!customerName || !customerPhone || !customerAddress || !items || !total || !paymentMethod) {
+            return NextResponse.json(
+                { success: false, error: 'Missing required fields' },
+                { status: 400 }
             );
-            await sendEmail(body.email, subject, html);
-            console.log("[EMAIL] Order confirmation sent successfully")
-        } else {
-            console.log("[EMAIL] No email provided, skipping notification")
         }
 
-        return NextResponse.json({
-            success: true,
-            order,
+        // Generate email content
+        const { subject, html } = generateCheckoutEmail({
+            customerName,
+            customerPhone,
+            customerAddress,
+            items,
+            total,
+            paymentMethod,
         });
 
-    } catch (error: any) {
-        console.error("[CHECKOUT ERROR]:", error.message)
-        console.error("[CHECKOUT FULL ERROR]:", JSON.stringify(error))
+        // Send email
+        const success = await sendEmail(
+            process.env.CHECKOUT_EMAIL_TO || 'ahmadrafa063@gmail.com',
+            subject,
+            html
+        );
 
-        return NextResponse.json({
-            success: false,
-            error: error.message,
-        }, { status: 500 });
+        if (!success) {
+            return NextResponse.json(
+                { success: false, error: 'Failed to send email' },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json(
+            { success: true, message: 'Email sent successfully' },
+            { status: 200 }
+        );
+    } catch (error: any) {
+        console.error('[CHECKOUT EMAIL ERROR]:', error);
+        return NextResponse.json(
+            { success: false, error: error.message },
+            { status: 500 }
+        );
     }
 }

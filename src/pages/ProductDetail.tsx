@@ -163,7 +163,7 @@ export function ProductDetail() {
                 <ShoppingBag size={24} /> Add to Cart
               </Button>
               <a
-                href={`https://wa.me/6285240174510?text=${encodeURIComponent(`Halo kak, Saya pesan
+                href={`https://wa.me/6282254707788?text=${encodeURIComponent(`Halo kak, Saya pesan
 
 Nama: 
 Alamat: 
@@ -175,7 +175,8 @@ Pembayaran: COD/Bank Transfer/QRIS`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-2xl py-8 h-auto px-8 border-2 border-slate-100 text-slate-600 font-bold group flex items-center justify-center gap-2 hover:border-orange-200")}
-                onClick={() => {
+                onClick={async (e) => {
+                  e.preventDefault();
                   const message = `Halo kak, Saya pesan
 
 Nama: 
@@ -185,11 +186,27 @@ Menu:
 Total Harga: Rp ${(product.price * quantity).toLocaleString()}
 
 Pembayaran: COD/Bank Transfer/QRIS`;
-                  fetch("/api/track", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ event: "Product WhatsApp Click", data: { message } })
-                  });
+
+                  // Send email notification via Vercel API
+                  try {
+                    await fetch('/api/send-notification', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        type: 'checkout-wa',
+                        name: '',
+                        address: '',
+                        phone: '',
+                        items: [{ name: product.name, quantity, price: product.price }],
+                        total: product.price * quantity,
+                        payment: 'COD/Bank Transfer/QRIS',
+                      }),
+                    });
+                  } catch (emailError) {
+                    console.error('Email notification failed:', emailError);
+                  }
+
+                  window.open(`https://wa.me/6282254707788?text=${encodeURIComponent(message)}`, '_blank');
                 }}
               >
                 Chat WhatsApp <MessageCircle size={24} className="motion-standard group-hover:text-primary" />

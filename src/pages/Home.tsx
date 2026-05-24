@@ -48,9 +48,9 @@ export function Home() {
     >
       {/* Hero Section */}
       <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center pt-28 pb-16 px-4 sm:px-6 lg:px-12">
-        {/* Animated Background Orbs - Optimized for mobile performance */}
-        <div className="hidden md:block absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full animate-pulse" style={{ willChange: "transform, opacity" }} />
-        <div className="hidden md:block absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full" style={{ willChange: "transform, opacity" }} />
+        {/* Animated Background Orbs - Consistent on all devices */}
+        <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full animate-pulse" style={{ willChange: "transform, opacity" }} />
+        <div className="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full" style={{ willChange: "transform, opacity" }} />
 
         <div className="max-w-7xl mx-auto w-full grid grid-cols-12 gap-8 lg:gap-12 items-center">
           <motion.div

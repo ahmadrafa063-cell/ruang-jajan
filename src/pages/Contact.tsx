@@ -61,23 +61,23 @@ export function Contact() {
                            </div>
                         </a>
 
-                        <a href="tel:+6285240174510" className="soft-hover-action flex items-center gap-6 rounded-2xl group">
+                        <a href="tel:+6282254707788" className="soft-hover-action flex items-center gap-6 rounded-2xl group">
                            <div className="motion-standard w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white">
                               <Phone size={24} />
                            </div>
                            <div>
                               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Layanan Telepon</p>
-                              <p className="motion-standard text-xl font-bold text-slate-900 group-hover:text-primary">+62 852 4017 4510</p>
+                              <p className="motion-standard text-xl font-bold text-slate-900 group-hover:text-primary">+62 822 5470 7788</p>
                            </div>
                         </a>
 
-                        <a href="https://wa.me/6285240174510" target="_blank" rel="noopener noreferrer" className="soft-hover-action flex items-center gap-6 rounded-2xl group">
+                        <a href="https://wa.me/6282254707788" target="_blank" rel="noopener noreferrer" className="soft-hover-action flex items-center gap-6 rounded-2xl group">
                            <div className="motion-standard w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-[#25D366] group-hover:text-white">
                               <MessageCircle size={24} />
                            </div>
                            <div>
                               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">WhatsApp Saja</p>
-                              <p className="motion-standard text-xl font-bold text-slate-900 group-hover:text-primary">+62 852 4017 4510</p>
+                              <p className="motion-standard text-xl font-bold text-slate-900 group-hover:text-primary">+62 822 5470 7788</p>
                            </div>
                         </a>
 
@@ -93,9 +93,11 @@ export function Contact() {
                      </div>
 
                      <div className="pt-8 flex items-center gap-4">
-                        <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-slate-400 hover:text-primary hover:bg-orange-50">
-                           <Instagram size={20} />
-                        </Button>
+                        <a href="https://www.instagram.com/ruanggjajan/" target="_blank" rel="noopener noreferrer">
+                           <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-slate-400 hover:text-primary hover:bg-orange-50">
+                              <Instagram size={20} />
+                           </Button>
+                        </a>
                         <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-slate-400 hover:text-primary hover:bg-orange-50">
                            <Twitter size={20} />
                         </Button>

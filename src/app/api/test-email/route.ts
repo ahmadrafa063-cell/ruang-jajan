@@ -25,7 +25,7 @@ export async function GET() {
     await transporter.verify()
     console.log('[EMAIL] Transporter verified!')
     await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: `"Ruang Jajan" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: process.env.SMTP_USER,
       subject: 'Test Email Vercel - RuangJajan',
       html: '<h1>Email is working on Vercel!</h1>',

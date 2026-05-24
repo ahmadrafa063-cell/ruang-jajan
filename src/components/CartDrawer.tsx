@@ -49,6 +49,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
                     className="soft-hover-action flex gap-4 p-3 rounded-2xl border border-slate-50 hover:border-orange-100 hover:bg-slate-50/50 group"
                   >
                     <div className="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">

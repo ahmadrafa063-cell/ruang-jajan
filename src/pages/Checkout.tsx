@@ -32,12 +32,53 @@ export function Checkout() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleWhatsAppCheckout = () => {
+  const handleWhatsAppCheckout = async () => {
     if (!formData.name || !formData.phone || !formData.address) {
       toast.error('Please fill in all required fields');
       return;
     }
 
+    console.log('Sending email notification...');
+    console.log('Data:', {
+      type: 'checkout-wa',
+      name: formData.name,
+      address: formData.address,
+      phone: formData.phone,
+      items: cart.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      total: total,
+      payment: formData.paymentMethod,
+    });
+
+    // Send email notification via Vercel API
+    try {
+      await fetch('/api/send-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'checkout-wa',
+          name: formData.name,
+          address: formData.address,
+          phone: formData.phone,
+          items: cart.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          total: total,
+          payment: formData.paymentMethod,
+        }),
+      });
+      console.log('Email notification sent successfully');
+    } catch (emailError) {
+      console.error('Email notification failed:', emailError);
+      // Don't block checkout if email fails
+    }
+
+    // Prepare WhatsApp message
     const itemsList = cart.map(item => `- ${item.name} x${item.quantity}`).join('\n');
     const message = `Halo kak, Saya pesan
 
@@ -50,13 +91,18 @@ Total Harga: Rp ${total.toLocaleString()}
 Pembayaran: ${formData.paymentMethod}`;
 
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/6285240174510?text=${encodedMessage}`, '_blank');
+    window.open(`https://wa.me/6282254707788?text=${encodedMessage}`, '_blank');
 
-    fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ event: "Checkout via WhatsApp", data: { message } })
-    }).catch(err => console.error("Failed to track checkout:", err));
+    // Track checkout event
+    try {
+      await fetch('/api/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event: 'Checkout via WhatsApp', data: { message, ...checkoutData } }),
+      });
+    } catch (trackError) {
+      console.error('Failed to track checkout:', trackError);
+    }
 
     toast.success('Redirecting to WhatsApp...');
     setTimeout(() => {
@@ -65,7 +111,36 @@ Pembayaran: ${formData.paymentMethod}`;
     }, 2000);
   };
 
-  const handleShopeeCheckout = () => {
+  const handleShopeeCheckout = async () => {
+    if (!formData.name || !formData.phone || !formData.address) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Send email notification via Vercel API
+    try {
+      await fetch('/api/send-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'checkout-shopeefood',
+          name: formData.name,
+          address: formData.address,
+          phone: formData.phone,
+          items: cart.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          total: total,
+          payment: formData.paymentMethod,
+        }),
+      });
+    } catch (emailError) {
+      console.error('Email notification failed:', emailError);
+      // Don't block checkout if email fails
+    }
+
     window.open(`https://shopee.co.id/store-name`, '_blank');
   };
 

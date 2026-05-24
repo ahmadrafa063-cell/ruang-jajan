@@ -67,17 +67,23 @@ export function Navbar() {
             transition={{ duration: 0.3, delay: 0.1 }}
             className="hidden md:flex items-center gap-8"
           >
-            {navLinks.map((link) => (
-              <Link
+            {navLinks.map((link, i) => (
+              <motion.div
                 key={link.name}
-                to={link.href}
-                className={cn(
-                  "motion-standard text-sm font-medium hover:text-primary",
-                  location.pathname === link.href ? "text-primary" : "text-slate-600"
-                )}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.1 }}
               >
-                {link.name}
-              </Link>
+                <Link
+                  to={link.href}
+                  className={cn(
+                    "motion-standard text-sm font-medium hover:text-primary",
+                    location.pathname === link.href ? "text-primary" : "text-slate-600"
+                  )}
+                >
+                  {link.name}
+                </Link>
+              </motion.div>
             ))}
           </motion.div>
 
@@ -132,7 +138,12 @@ export function Navbar() {
               transition={{ type: 'spring', damping: 30, stiffness: 250 }}
               className="fixed inset-0 top-0 left-0 w-full h-screen bg-slate-900 z-50 md:hidden flex flex-col p-8"
             >
-              <div className="flex items-center justify-between mb-12">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex items-center justify-between mb-12"
+              >
                 <Link to="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
                   <BrandMark />
                   <span className="text-2xl font-black tracking-tight text-white">
@@ -142,7 +153,7 @@ export function Navbar() {
                 <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:bg-white/10 rounded-full">
                   <X size={28} />
                 </Button>
-              </div>
+              </motion.div>
 
               <div className="flex flex-col gap-6">
                 {navLinks.map((link, i) => (

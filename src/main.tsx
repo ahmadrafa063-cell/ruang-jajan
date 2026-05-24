@@ -32,17 +32,29 @@ const Contact = () => <div className="px-4 py-16 sm:p-24 text-center max-w-2xl m
     <ContactQR />
     <div className="text-center">
       <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Contact person</p>
-      <p className="text-2xl font-black text-primary">+62 852 4017 4510</p>
+      <p className="text-2xl font-black text-primary">+62 822 5470 7788</p>
     </div>
-    <Button 
+    <Button
       className="rounded-full w-full py-6 h-auto font-bold text-lg bg-slate-900 hover:bg-slate-800 text-white"
-      onClick={() => {
-        fetch("/api/track", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ event: "Contact WhatsApp Click", data: { page: "Contact" } })
-        });
-        window.open("https://wa.me/6285240174510", "_blank");
+      onClick={async () => {
+        try {
+          await fetch('/api/send-notification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'checkout-wa',
+              name: '',
+              address: '',
+              phone: '',
+              items: [],
+              total: 0,
+              payment: 'Contact Request',
+            }),
+          });
+        } catch (emailError) {
+          console.error('Email notification failed:', emailError);
+        }
+        window.open("https://wa.me/6282254707788", "_blank");
       }}
     >
       Send Message

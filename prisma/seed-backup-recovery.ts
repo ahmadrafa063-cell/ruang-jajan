@@ -197,7 +197,7 @@ async function main() {
                passwordHash: adminPassword,
                firstName: 'Admin',
                lastName: 'RuangJajan',
-               phone: '+6285240174510',
+               phone: '+6282254707788',
                role: UserRole.ADMIN,
                status: UserStatus.ACTIVE,
                emailVerified: true,

@@ -27,13 +27,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = (product: Product, quantity: number = 1) => {
     const existing = cart.find(item => item.id === product.id);
-    
+
     setCart(prev => {
       const isExisting = prev.find(item => item.id === product.id);
       if (isExisting) {
-        return prev.map(item => 
-          item.id === product.id 
-            ? { ...item, quantity: item.quantity + quantity } 
+        return prev.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
@@ -43,14 +43,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const prefix = product.category === 'Drinks' ? 'Minuman' : 'Makanan';
     toast.success(`${prefix} ${product.name} telah masuk dikeranjang`);
 
-    fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        event: "Add to Cart", 
-        data: { message: `Ditambahkan ke keranjang: ${product.name} (x${quantity})` } 
-      })
-    }).catch(err => console.error("Failed to track add to cart:", err));
+    console.log('Sending add-to-cart email notification...');
+    console.log('Data:', {
+      type: 'add-to-cart',
+      name: 'Guest',
+      items: [{ name: product.name, quantity, price: product.price }],
+      total: product.price * quantity,
+    });
+
+    // Send email notification via Vercel API (non-blocking)
+    fetch('/api/send-notification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'add-to-cart',
+        name: 'Guest',
+        items: [{ name: product.name, quantity, price: product.price }],
+        total: product.price * quantity,
+      }),
+    }).then(res => {
+      console.log('Add to cart email response:', res);
+    }).catch(err => console.error('Email notification failed:', err));
   };
 
   const removeFromCart = (productId: string) => {
@@ -63,7 +76,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       removeFromCart(productId);
       return;
     }
-    setCart(prev => prev.map(item => 
+    setCart(prev => prev.map(item =>
       item.id === productId ? { ...item, quantity } : item
     ));
   };
@@ -78,15 +91,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const itemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ 
-      cart, 
-      addToCart, 
-      removeFromCart, 
-      updateQuantity, 
-      clearCart, 
-      subtotal, 
-      total, 
-      itemCount 
+    <CartContext.Provider value={{
+      cart,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      subtotal,
+      total,
+      itemCount
     }}>
       {children}
     </CartContext.Provider>
