@@ -10,45 +10,18 @@ import { Separator } from './ui/separator';
 import { CartDrawer } from './CartDrawer';
 import { cn } from '../lib/utils';
 import { BrandMark } from './BrandMark';
+import { useScrollPosition } from '../hooks/useScrollPosition';
+import { useDeviceType } from '../hooks/useDeviceType';
+import { springs } from '../lib/animations';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isCartOpen, setIsCartOpen] = React.useState(false);
-  const [isScrolled, setIsScrolled] = React.useState(false);
+  const { scrollY, scrollDirection, isScrolled } = useScrollPosition();
+  const { isTouch } = useDeviceType();
   const { user, loginWithGoogle, logout, isAdmin, isLoggingIn } = useAuth();
   const { itemCount } = useCart();
   const location = useLocation();
-
-  // Optimize scroll handler with useCallback and throttle
-  React.useEffect(() => {
-    let isMounted = true;
-    const handleScroll = () => {
-      if (isMounted) {
-        setIsScrolled(window.scrollY > 20);
-      }
-    };
-
-    // Use requestAnimationFrame for smoother scroll handling
-    let scrollTimeout: number;
-    const handleScrollThrottled = () => {
-      if (scrollTimeout) {
-        cancelAnimationFrame(scrollTimeout);
-      }
-      scrollTimeout = requestAnimationFrame(() => {
-        handleScroll();
-      });
-    };
-
-    window.addEventListener('scroll', handleScrollThrottled);
-
-    return () => {
-      isMounted = false;
-      window.removeEventListener('scroll', handleScrollThrottled);
-      if (scrollTimeout) {
-        cancelAnimationFrame(scrollTimeout);
-      }
-    };
-  }, []);
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -64,44 +37,74 @@ export function Navbar() {
     }
   };
 
+  // Navbar state
+  const isSticky = scrollY > 20;
+  const isHidden = scrollDirection === 'down' && isScrolled;
+  const isVisible = scrollDirection === 'up' || !isScrolled;
+
   return (
     <>
-      <nav className={cn(
-        "motion-standard fixed top-0 left-0 right-0 z-50 px-6 md:px-10",
-        isScrolled ? "py-4 bg-white/80 backdrop-blur-md border-b border-orange-100 shadow-sm" : "py-6 bg-transparent"
-      )}>
+      <motion.nav
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 px-6 md:px-10",
+          isSticky
+            ? "py-4 bg-white/80 backdrop-blur-md border-b border-orange-100 shadow-sm"
+            : "py-6 bg-transparent"
+        )}
+        initial={{ y: 0 }}
+        animate={{
+          y: isHidden ? -100 : 0,
+          transition: {
+            type: 'spring',
+            stiffness: 300,
+            damping: 30,
+            mass: 1
+          }
+        }}
+      >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
-          <div>
-            <Link to="/" className="soft-hover-action flex items-center gap-2 rounded-full">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: 'spring', ...springs.snappy }}
+          >
+            <Link to="/" className="flex items-center gap-2 rounded-full">
               <BrandMark className="shadow-lg shadow-primary/20" />
               <span className="text-2xl font-black tracking-tight text-slate-900">
                 Ruang<span className="text-primary italic">Jajan</span>
               </span>
             </Link>
-          </div>
+          </motion.div>
 
           {/* Desktop Nav */}
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.8, 0.25, 1] }}
             className="hidden md:flex items-center gap-8"
           >
             {navLinks.map((link, i) => (
-              <div
+              <motion.div
                 key={link.name}
-                className="motion-standard"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: 'spring', ...springs.snappy }}
               >
                 <Link
                   to={link.href}
                   className={cn(
-                    "motion-standard text-sm font-medium hover:text-primary",
-                    location.pathname === link.href ? "text-primary" : "text-slate-600"
+                    "text-sm font-medium transition-colors",
+                    location.pathname === link.href
+                      ? "text-primary font-bold"
+                      : "text-slate-600 hover:text-primary"
                   )}
                 >
                   {link.name}
                 </Link>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Actions */}
           <div className="flex items-center gap-2 md:gap-4">
@@ -118,6 +121,7 @@ export function Navbar() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
+                    transition={{ type: 'spring', ...springs.bouncy }}
                     className="absolute -top-1 -right-1"
                   >
                     <Badge className="h-5 w-5 p-0 flex items-center justify-center bg-primary text-[10px] border-2 border-white">
@@ -136,15 +140,32 @@ export function Navbar() {
               </Link>
             )}
 
-            <Button variant="ghost" size="icon" className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5" onClick={() => setIsOpen(!isOpen)}>
-              <span className={cn("motion-standard w-6 h-0.5 bg-slate-900", isOpen && "rotate-45 translate-y-2")} />
-              <span className={cn("motion-standard w-6 h-0.5 bg-slate-900", isOpen && "opacity-0")} />
-              <span className={cn("motion-standard w-6 h-0.5 bg-slate-900", isOpen && "-rotate-45 -translate-y-2")} />
-            </Button>
+            <motion.button
+              className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5"
+              onClick={() => setIsOpen(!isOpen)}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', ...springs.snappy }}
+            >
+              <motion.span
+                className={cn("w-6 h-0.5 bg-slate-900 rounded-full")}
+                animate={isOpen ? { rotate: 45, translateY: 2 } : {}}
+                transition={{ type: 'spring', ...springs.snappy }}
+              />
+              <motion.span
+                className={cn("w-6 h-0.5 bg-slate-900 rounded-full")}
+                animate={isOpen ? { opacity: 0 } : {}}
+                transition={{ type: 'spring', ...springs.snappy }}
+              />
+              <motion.span
+                className={cn("w-6 h-0.5 bg-slate-900 rounded-full")}
+                animate={isOpen ? { rotate: -45, translateY: -2 } : {}}
+                transition={{ type: 'spring', ...springs.snappy }}
+              />
+            </motion.button>
           </div>
         </div>
 
-        {/* Mobile Nav Drawer - Optimized for performance */}
+        {/* Mobile Nav Drawer - iOS-style spring slide from right */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -152,50 +173,73 @@ export function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-0 top-0 left-0 w-full h-screen bg-slate-900 z-50 md:hidden flex flex-col p-8 will-change-transform"
+              className="fixed inset-0 top-0 left-0 w-full h-screen bg-slate-900 z-50 md:hidden flex flex-col p-8"
             >
-              <div className="flex items-center justify-between mb-12">
+              <motion.div
+                className="flex items-center justify-between mb-12"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
                 <Link to="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
                   <BrandMark />
                   <span className="text-2xl font-black tracking-tight text-white">
                     Ruang<span className="text-primary italic">Jajan</span>
                   </span>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:bg-white/10 rounded-full">
+                <motion.button
+                  onClick={() => setIsOpen(false)}
+                  className="text-white hover:bg-white/10 rounded-full p-2"
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', ...springs.snappy }}
+                >
                   <X size={28} />
-                </Button>
-              </div>
+                </motion.button>
+              </motion.div>
 
-              <div className="flex flex-col gap-6">
+              <motion.div
+                className="flex flex-col gap-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ staggerChildren: 0.08 }}
+              >
                 {navLinks.map((link, i) => (
-                  <div
+                  <motion.div
                     key={link.name}
-                    className="motion-standard"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.08, type: 'spring', ...springs.smooth }}
                   >
                     <Link
                       to={link.href}
                       onClick={() => setIsOpen(false)}
                       className={cn(
-                        "motion-standard text-3xl font-black",
-                        location.pathname === link.href ? "text-primary ml-2" : "text-slate-400 hover:text-white"
+                        "text-3xl font-black transition-colors",
+                        location.pathname === link.href
+                          ? "text-primary ml-2"
+                          : "text-slate-400 hover:text-white"
                       )}
                     >
                       {link.name}
                     </Link>
-                  </div>
+                  </motion.div>
                 ))}
 
                 {isAdmin && (
                   <>
                     <Separator className="bg-slate-800 my-4" />
                     <Link to="/admin" onClick={() => setIsOpen(false)} className="w-full">
-                      <Button className="w-full rounded-2xl py-6 h-auto font-bold bg-white text-slate-900 border-none hover:bg-slate-200">
+                      <motion.button
+                        className="w-full rounded-2xl py-6 h-auto font-bold bg-white text-slate-900 border-none"
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ type: 'spring', ...springs.snappy }}
+                      >
                         Admin Dashboard
-                      </Button>
+                      </motion.button>
                     </Link>
                   </>
                 )}
-              </div>
+              </motion.div>
 
               <div className="mt-auto pt-8 text-center">
                 <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">© 2026 RUANGJAJAN HUB</p>
@@ -203,7 +247,7 @@ export function Navbar() {
             </motion.div>
           )}
         </AnimatePresence>
-      </nav >
+      </motion.nav>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
