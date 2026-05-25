@@ -12,7 +12,8 @@ import { cn } from '../lib/utils';
 import { BrandMark } from './BrandMark';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 import { useDeviceType } from '../hooks/useDeviceType';
-import { springs } from '../lib/animations';
+import { springs, variants } from '../lib/animations';
+import { getPerformanceTier, shouldAnimate } from '../lib/performanceTier';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -22,6 +23,8 @@ export function Navbar() {
   const { user, loginWithGoogle, logout, isAdmin, isLoggingIn } = useAuth();
   const { itemCount } = useCart();
   const location = useLocation();
+  const performanceTier = getPerformanceTier();
+  const canAnimate = shouldAnimate();
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -56,8 +59,8 @@ export function Navbar() {
           y: isHidden ? -100 : 0,
           transition: {
             type: 'spring',
-            stiffness: 300,
-            damping: 30,
+            stiffness: performanceTier === 'high' ? 300 : 250,
+            damping: performanceTier === 'high' ? 30 : 35,
             mass: 1
           }
         }}
@@ -65,8 +68,8 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
           <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={canAnimate ? { scale: 1.05 } : {}}
+            whileTap={canAnimate ? { scale: 0.95 } : {}}
             transition={{ type: 'spring', ...springs.snappy }}
           >
             <Link to="/" className="flex items-center gap-2 rounded-full">
@@ -79,16 +82,16 @@ export function Navbar() {
 
           {/* Desktop Nav */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={canAnimate ? { opacity: 0, y: -10 } : { opacity: 1, y: 0 }}
+            animate={canAnimate ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.3, ease: [0.25, 0.8, 0.25, 1] }}
             className="hidden md:flex items-center gap-8"
           >
             {navLinks.map((link, i) => (
               <motion.div
                 key={link.name}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={canAnimate ? { scale: 1.1 } : {}}
+                whileTap={canAnimate ? { scale: 0.95 } : {}}
                 transition={{ type: 'spring', ...springs.snappy }}
               >
                 <Link
@@ -177,8 +180,8 @@ export function Navbar() {
             >
               <motion.div
                 className="flex items-center justify-between mb-12"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={canAnimate ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
+                animate={canAnimate ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.3 }}
               >
                 <Link to="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
@@ -199,16 +202,20 @@ export function Navbar() {
 
               <motion.div
                 className="flex flex-col gap-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ staggerChildren: 0.08 }}
+                initial={canAnimate ? { opacity: 0 } : { opacity: 1 }}
+                animate={canAnimate ? { opacity: 1 } : {}}
+                transition={{ staggerChildren: canAnimate ? 0.08 : 0 }}
               >
                 {navLinks.map((link, i) => (
                   <motion.div
                     key={link.name}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.08, type: 'spring', ...springs.smooth }}
+                    initial={canAnimate ? { opacity: 0, x: 20 } : { opacity: 1, x: 0 }}
+                    animate={canAnimate ? { opacity: 1, x: 0 } : {}}
+                    transition={{
+                      delay: canAnimate ? i * 0.08 : 0,
+                      type: 'spring',
+                      ...springs.smooth
+                    }}
                   >
                     <Link
                       to={link.href}

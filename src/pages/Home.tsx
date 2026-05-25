@@ -10,9 +10,12 @@ import { Product } from '../types';
 import { cn } from '../lib/utils';
 import { useCart } from '../context/CartContext';
 import { StarReview } from '../components/StarReview';
-
+import { getPerformanceTier, shouldAnimate, shouldInfiniteAnimate } from '../lib/performanceTier';
 
 export function Home() {
+  const performanceTier = getPerformanceTier();
+  const canAnimate = shouldAnimate();
+  const canInfiniteAnimate = shouldInfiniteAnimate();
 
   const [search, setSearch] = React.useState('');
   const [activeCategory, setActiveCategory] = React.useState('All');
@@ -44,14 +47,28 @@ export function Home() {
       {/* Hero Section */}
       <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center pt-28 pb-16 px-4 sm:px-6 lg:px-12 overflow-hidden">
         {/* Animated Background Orbs - Optimized for performance */}
-        <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full" style={{ willChange: "opacity" }} />
-        <div className="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full" style={{ willChange: "opacity" }} />
+        {/* Only animate on high-end devices */}
+        {canInfiniteAnimate && (
+          <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full animate-float" />
+        )}
+        {!canInfiniteAnimate && (
+          <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full" />
+        )}
+        {canInfiniteAnimate && (
+          <div className="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full animate-float" />
+        )}
+        {!canInfiniteAnimate && (
+          <div className="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full" />
+        )}
 
         <div className="max-w-7xl mx-auto w-full grid grid-cols-12 gap-8 lg:gap-12 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
+            initial={canAnimate ? { opacity: 0, x: -50 } : { opacity: 1, x: 0 }}
+            animate={canAnimate ? { opacity: 1, x: 0 } : {}}
+            transition={{
+              duration: performanceTier === 'high' ? 0.6 : 0.8,
+              ease: [0.25, 1, 0.5, 1]
+            }}
             className="col-span-12 lg:col-span-7 space-y-8"
           >
             <div className="space-y-6">
@@ -74,9 +91,13 @@ export function Home() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1], delay: 0.1 }}
+            initial={canAnimate ? { opacity: 0, scale: 0.9 } : { opacity: 1, scale: 1 }}
+            animate={canAnimate ? { opacity: 1, scale: 1 } : {}}
+            transition={{
+              duration: performanceTier === 'high' ? 0.6 : 0.8,
+              ease: [0.25, 1, 0.5, 1],
+              delay: canAnimate ? 0.1 : 0
+            }}
             className="col-span-12 lg:col-span-5 relative mt-12 lg:mt-0"
           >
             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px]"></div>

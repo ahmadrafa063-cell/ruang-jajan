@@ -23,6 +23,14 @@ import {
      isIOS,
      isAndroid,
 } from '../lib/deviceDetect';
+import {
+     getPerformanceTier,
+     shouldAnimate,
+     shouldParallax,
+     shouldBlur,
+     shouldInfiniteAnimate,
+     PerformanceTier,
+} from '../lib/performanceTier';
 
 // Animation config type
 export interface AnimationConfig {
@@ -91,6 +99,7 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
      const [isTouch, setIsTouch] = useState(false);
      const [isIOSDevice, setIsIOS] = useState(false);
      const [isAndroidDevice, setIsAndroid] = useState(false);
+     const [mounted, setMounted] = useState(false);
 
      // Update performance tier
      const updatePerformanceTier = () => {
@@ -106,18 +115,14 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
           setIsIOS(isIOS());
           setIsAndroid(isAndroid());
 
-          // Determine performance tier
-          if (reduced || isLowEndDevice()) {
-               setPerformanceTier('low');
-          } else if (isTouch) {
-               setPerformanceTier('medium');
-          } else {
-               setPerformanceTier('high');
-          }
+          // Get performance tier from cached detection
+          const tier = getPerformanceTier();
+          setPerformanceTier(tier);
      };
 
-     // Initial update
+     // Initial update after hydration
      useEffect(() => {
+          setMounted(true);
           updatePerformanceTier();
      }, []);
 
@@ -135,6 +140,10 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
      const getAnimationConfig = (preset: string): AnimationConfig => {
           if (reducedMotion) {
                return { duration: 0 };
+          }
+
+          if (performanceTier === 'low') {
+               return { duration: 0.3, ease: 'easeInOut' };
           }
 
           switch (preset) {
@@ -167,11 +176,11 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
      };
 
      // Determine what to animate
-     const shouldAnimate = performanceTier !== 'low' && !reducedMotion;
-     const shouldStagger = performanceTier !== 'low' && !reducedMotion;
-     const shouldParallax = performanceTier === 'high' && !reducedMotion;
-     const shouldBlur = performanceTier !== 'low' && !reducedMotion;
-     const shouldGlow = performanceTier === 'high' && !reducedMotion;
+     const shouldAnimate = performanceTier !== 'low' && !reducedMotion && mounted;
+     const shouldStagger = performanceTier !== 'low' && !reducedMotion && mounted;
+     const shouldParallax = performanceTier === 'high' && !reducedMotion && mounted;
+     const shouldBlur = performanceTier !== 'low' && !reducedMotion && mounted;
+     const shouldGlow = performanceTier === 'high' && !reducedMotion && mounted;
 
      // Context value
      const contextValue: AnimationContextType = {

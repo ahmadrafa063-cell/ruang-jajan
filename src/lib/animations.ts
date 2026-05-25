@@ -9,30 +9,33 @@
  * - Layered motion with stagger children
  * - Fast in, slow out curves (natural feel)
  * - Transform + opacity only (GPU accelerated)
+ * - Performance tier detection for mobile optimization
  */
+
+import { getSpring, getStaggerDelay, shouldAnimate, shouldInfiniteAnimate } from './performanceTier';
 
 // iOS Spring Physics Presets
 // Based on Apple's Human Interface Guidelines for spring animations
 export const springs = {
      // Snappy - Instant feedback for buttons and small elements
      // Stiffness: 400 (snappy), Damping: 30 (minimal oscillation)
-     snappy: { stiffness: 400, damping: 30 },
+     snappy: getSpring('snappy'),
 
      // Smooth - Cards, panels, moderate movement
      // Stiffness: 300 (balanced), Damping: 25 (natural feel)
-     smooth: { stiffness: 300, damping: 25 },
+     smooth: getSpring('smooth'),
 
      // Bouncy - Badges, popups, playful elements
      // Stiffness: 500 (very snappy), Damping: 20 (more bounce)
-     bouncy: { stiffness: 500, damping: 20 },
+     bouncy: getSpring('bouncy'),
 
      // Gentle - Page transitions, large elements
      // Stiffness: 200 (soft), Damping: 20 (gentle movement)
-     gentle: { stiffness: 200, damping: 20 },
+     gentle: getSpring('gentle'),
 
      // Molasses - Hero sections, large parallax elements
      // Stiffness: 150 (very soft), Damping: 18 (slow, smooth)
-     molasses: { stiffness: 150, damping: 18 },
+     molasses: getSpring('molasses'),
 
      // iOS Share Sheet style - Slide up from bottom
      sheet: { stiffness: 300, damping: 30, mass: 1 },
@@ -104,10 +107,10 @@ export const variants = {
      },
 
      // Stagger Container - Children animate with delay
-     // iOS pattern: Sequential entrance with 0.08s stagger
+     // iOS pattern: Sequential entrance with staggered children
      stagger: {
           visible: {
-               transition: { staggerChildren: 0.08 },
+               transition: { staggerChildren: getStaggerDelay(0.08) },
           },
      },
 
@@ -150,22 +153,24 @@ export const variants = {
      },
 
      // Pulse - Breathing animation for CTAs
+     // Only animate on high-end devices
      pulse: {
           initial: { scale: 1 },
-          animate: {
+          animate: shouldInfiniteAnimate() ? {
                scale: [1, 1.05, 1],
                transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
-          },
+          } : {},
      },
 
      // Float - Gentle up/down movement
      // iOS pattern: Subtle floating for hero elements
+     // Only animate on high-end devices
      float: {
           initial: { y: 0 },
-          animate: {
+          animate: shouldInfiniteAnimate() ? {
                y: [-10, 0, -10],
                transition: { duration: 6, repeat: Infinity, ease: 'easeInOut' },
-          },
+          } : {},
      },
 
      // Blur In - Text starts blurred, becomes sharp
@@ -180,13 +185,13 @@ export const variants = {
      },
 
      // Shine - CTA button shine effect
-     // iOS pattern: Light sweep across button
+     // Only animate on high-end devices
      shine: {
           initial: { left: '-100%' },
-          animate: {
+          animate: shouldInfiniteAnimate() ? {
                left: '100%',
                transition: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
-          },
+          } : {},
      },
 
      // Pop - Scale bounce effect

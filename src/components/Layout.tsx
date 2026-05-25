@@ -8,10 +8,13 @@ import { useLocation } from 'react-router-dom';
 import { useDeviceType } from '../hooks/useDeviceType';
 import { CustomCursor } from './CustomCursor';
 import { AnimationProvider } from './AnimationProvider';
+import { getPerformanceTier, shouldAnimate } from '../lib/performanceTier';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { isTouch, prefersReducedMotion } = useDeviceType();
+  const performanceTier = getPerformanceTier();
+  const canAnimate = shouldAnimate();
 
   return (
     <AnimationProvider>
@@ -25,13 +28,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
+                initial={canAnimate ? { opacity: 0, y: 4 } : { opacity: 1, y: 0 }}
+                animate={canAnimate ? { opacity: 1, y: 0 } : {}}
+                exit={canAnimate ? { opacity: 0, y: -4 } : {}}
                 transition={{
                   type: 'spring',
-                  stiffness: 200,
-                  damping: 20,
+                  stiffness: performanceTier === 'high' ? 200 : 150,
+                  damping: performanceTier === 'high' ? 20 : 25,
                   mass: 1
                 }}
                 className="w-full"
