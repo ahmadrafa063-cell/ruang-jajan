@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Flame, Instagram, Facebook, Twitter, Mail, Phone } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { BrandMark } from './BrandMark';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();

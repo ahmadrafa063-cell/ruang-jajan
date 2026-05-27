@@ -1,7 +1,9 @@
 import { Product } from '../types';
-import kopiImg from '../assets/images/ChatGPT Image May 18, 2026, 08_56_09 PM.png';
-import makaroniImg from '../assets/images/ChatGPT Image May 18, 2026, 11_51_30 PM.png';
-import kacangImg from '../assets/images/ChatGPT Image May 20, 2026, 08_44_12 PM.png';
+
+// Static image paths from /public folder (not bundled into JS)
+const kopiImg = '/images/hero-1.webp';
+const makaroniImg = '/images/hero-3.webp';
+const kacangImg = '/images/hero-2.webp';
 
 export const DUMMY_PRODUCTS: Product[] = [
   {

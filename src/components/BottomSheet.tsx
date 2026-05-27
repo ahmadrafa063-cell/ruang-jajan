@@ -19,7 +19,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'motion/react';
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { isIOS, isAndroid } from '../lib/deviceDetect';
 import { useSafeArea } from '../hooks/useSafeArea';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { MessageCircle, ShoppingBag } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 export function FloatingActions() {
   return (

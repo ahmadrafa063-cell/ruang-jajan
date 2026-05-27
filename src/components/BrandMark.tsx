@@ -1,5 +1,4 @@
 import type { HTMLAttributes } from 'react';
-import logoMark from '../assets/images/ruangjajan-mark.png';
 import { cn } from '../lib/utils';
 
 type BrandMarkProps = HTMLAttributes<HTMLSpanElement> & {
@@ -17,9 +16,11 @@ export function BrandMark({ className, imageClassName, ...props }: BrandMarkProp
       {...props}
     >
       <img
-        src={logoMark}
+        src="/images/logo-mark.webp"
         alt=""
         className={cn("h-10 w-10 object-contain drop-shadow-sm rounded-full", imageClassName)}
+        loading="eager"
+        fetchpriority="high"
       />
     </span>
   );

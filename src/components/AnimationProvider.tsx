@@ -8,6 +8,7 @@
  * - Provides animation config to children
  * - Handles reduced motion globally
  * - Optimizes animations based on device capabilities
+ * - Defers animations until after hydration
  * 
  * Usage:
  * <AnimationProvider>
@@ -15,21 +16,22 @@
  * </AnimationProvider>
  */
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import {
-     isLowEndDevice,
-     prefersReducedMotion,
      isTouchDevice,
+     prefersReducedMotion,
      isIOS,
      isAndroid,
 } from '../lib/deviceDetect';
 import {
      getPerformanceTier,
-     shouldAnimate,
+     shouldUseFramerMotion,
      shouldParallax,
      shouldBlur,
      shouldInfiniteAnimate,
      PerformanceTier,
+     getAnimationBudget,
+     ANIMATION_BUDGET,
 } from '../lib/performanceTier';
 
 // Animation config type
@@ -53,9 +55,6 @@ export interface AnimationPresets {
      molasses: AnimationConfig;
 }
 
-// Performance tier
-export type PerformanceTier = 'high' | 'medium' | 'low';
-
 // Context type
 interface AnimationContextType {
      performanceTier: PerformanceTier;
@@ -70,6 +69,8 @@ interface AnimationContextType {
      shouldParallax: boolean;
      shouldBlur: boolean;
      shouldGlow: boolean;
+     animationBudget: typeof ANIMATION_BUDGET[PerformanceTier];
+     mounted: boolean;
 }
 
 // Default context
@@ -86,6 +87,8 @@ const defaultContext: AnimationContextType = {
      shouldParallax: true,
      shouldBlur: true,
      shouldGlow: true,
+     animationBudget: ANIMATION_BUDGET.high,
+     mounted: false,
 };
 
 // Create context
@@ -102,7 +105,7 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
      const [mounted, setMounted] = useState(false);
 
      // Update performance tier
-     const updatePerformanceTier = () => {
+     const updatePerformanceTier = useMemo(() => () => {
           // Check reduced motion first (highest priority)
           const reduced = prefersReducedMotion();
           setReducedMotion(reduced);
@@ -118,13 +121,13 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
           // Get performance tier from cached detection
           const tier = getPerformanceTier();
           setPerformanceTier(tier);
-     };
+     }, []);
 
      // Initial update after hydration
      useEffect(() => {
           setMounted(true);
           updatePerformanceTier();
-     }, []);
+     }, [updatePerformanceTier]);
 
      // Update on resize
      useEffect(() => {
@@ -134,10 +137,10 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
 
           window.addEventListener('resize', handleResize);
           return () => window.removeEventListener('resize', handleResize);
-     }, []);
+     }, [updatePerformanceTier]);
 
      // Get animation config
-     const getAnimationConfig = (preset: string): AnimationConfig => {
+     const getAnimationConfig = useMemo(() => (preset: string): AnimationConfig => {
           if (reducedMotion) {
                return { duration: 0 };
           }
@@ -160,10 +163,10 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
                default:
                     return { type: 'spring', stiffness: 300, damping: 25 };
           }
-     };
+     }, [performanceTier, reducedMotion]);
 
      // Get transition config
-     const getTransition = (preset: string): AnimationConfig => {
+     const getTransition = useMemo(() => (preset: string): AnimationConfig => {
           if (reducedMotion) {
                return { duration: 0 };
           }
@@ -173,17 +176,18 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
           }
 
           return getAnimationConfig(preset);
-     };
+     }, [performanceTier, reducedMotion, getAnimationConfig]);
 
      // Determine what to animate
-     const shouldAnimate = performanceTier !== 'low' && !reducedMotion && mounted;
-     const shouldStagger = performanceTier !== 'low' && !reducedMotion && mounted;
-     const shouldParallax = performanceTier === 'high' && !reducedMotion && mounted;
-     const shouldBlur = performanceTier !== 'low' && !reducedMotion && mounted;
-     const shouldGlow = performanceTier === 'high' && !reducedMotion && mounted;
+     const shouldAnimate = useMemo(() => performanceTier !== 'low' && !reducedMotion && mounted, [performanceTier, reducedMotion, mounted]);
+     const shouldStagger = useMemo(() => performanceTier !== 'low' && !reducedMotion && mounted, [performanceTier, reducedMotion, mounted]);
+     const shouldParallax = useMemo(() => performanceTier === 'high' && !reducedMotion && mounted, [performanceTier, reducedMotion, mounted]);
+     const shouldBlur = useMemo(() => performanceTier !== 'low' && !reducedMotion && mounted, [performanceTier, reducedMotion, mounted]);
+     const shouldGlow = useMemo(() => performanceTier === 'high' && !reducedMotion && mounted, [performanceTier, reducedMotion, mounted]);
+     const animationBudget = useMemo(() => getAnimationBudget(), []);
 
      // Context value
-     const contextValue: AnimationContextType = {
+     const contextValue = useMemo<AnimationContextType>(() => ({
           performanceTier,
           reducedMotion,
           isTouch,
@@ -196,7 +200,24 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
           shouldParallax,
           shouldBlur,
           shouldGlow,
-     };
+          animationBudget,
+          mounted,
+     }), [
+          performanceTier,
+          reducedMotion,
+          isTouch,
+          isIOSDevice,
+          isAndroidDevice,
+          getAnimationConfig,
+          getTransition,
+          shouldAnimate,
+          shouldStagger,
+          shouldParallax,
+          shouldBlur,
+          shouldGlow,
+          animationBudget,
+          mounted,
+     ]);
 
      return (
           <AnimationContext.Provider value={contextValue}>

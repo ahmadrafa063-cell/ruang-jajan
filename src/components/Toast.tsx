@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 import { isTouchDevice } from '../lib/deviceDetect';
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Plus, Minus, ShoppingBag, ArrowLeft, Flame, Sparkles, Zap, MessageCircle } from 'lucide-react';
 import { Button, buttonVariants } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';

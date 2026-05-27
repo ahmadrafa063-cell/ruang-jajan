@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Truck, MessageCircle, ArrowLeft, Store } from 'lucide-react';
 import { useCart } from '../context/CartContext';

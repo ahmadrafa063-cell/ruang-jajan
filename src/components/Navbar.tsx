@@ -1,6 +1,19 @@
-import React from 'react';
+/**
+ * Navbar Component
+ * 
+ * Performance-optimized navbar with minimal Framer Motion usage.
+ * 
+ * Features:
+ * - React.memo for preventing unnecessary re-renders
+ * - useCallback for animation handlers
+ * - CSS animations for simple effects
+ * - Framer Motion ONLY for complex interactions
+ * - Performance tier-aware animations
+ */
+
+import React, { useCallback, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ShoppingBag, User, LogOut, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -12,8 +25,84 @@ import { cn } from '../lib/utils';
 import { BrandMark } from './BrandMark';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 import { useDeviceType } from '../hooks/useDeviceType';
+import { useAnimation } from './AnimationProvider';
 import { springs, variants } from '../lib/animations';
-import { getPerformanceTier, shouldAnimate } from '../lib/performanceTier';
+
+// Memoized nav link component
+const NavItem = React.memo(function NavItem({
+  link,
+  location,
+  canAnimate,
+}: {
+  link: { name: string; href: string };
+  location: { pathname: string };
+  canAnimate: boolean;
+}) {
+  const isActive = location.pathname === link.href;
+
+  return (
+    <motion.div
+      whileHover={canAnimate ? { scale: 1.1 } : {}}
+      whileTap={canAnimate ? { scale: 0.95 } : {}}
+      transition={{ type: 'spring', ...springs.snappy }}
+    >
+      <Link
+        to={link.href}
+        className={cn(
+          "text-sm font-medium transition-colors",
+          isActive
+            ? "text-primary font-bold"
+            : "text-slate-600 hover:text-primary"
+        )}
+      >
+        {link.name}
+      </Link>
+    </motion.div>
+  );
+});
+
+// Memoized mobile nav link component
+const MobileNavItem = React.memo(function MobileNavItem({
+  link,
+  location,
+  canAnimate,
+  index,
+  setIsOpen,
+}: {
+  link: { name: string; href: string };
+  location: { pathname: string };
+  canAnimate: boolean;
+  index: number;
+  setIsOpen: (open: boolean) => void;
+}) {
+  const isActive = location.pathname === link.href;
+
+  return (
+    <motion.div
+      key={link.name}
+      initial={canAnimate ? { opacity: 0, x: 20 } : { opacity: 1, x: 0 }}
+      animate={canAnimate ? { opacity: 1, x: 0 } : {}}
+      transition={{
+        delay: canAnimate ? index * 0.08 : 0,
+        type: 'spring',
+        ...springs.smooth,
+      }}
+    >
+      <Link
+        to={link.href}
+        onClick={() => setIsOpen(false)}
+        className={cn(
+          "text-3xl font-black transition-colors",
+          isActive
+            ? "text-primary ml-2"
+            : "text-slate-400 hover:text-white"
+        )}
+      >
+        {link.name}
+      </Link>
+    </motion.div>
+  );
+});
 
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -23,27 +112,37 @@ export function Navbar() {
   const { user, loginWithGoogle, logout, isAdmin, isLoggingIn } = useAuth();
   const { itemCount } = useCart();
   const location = useLocation();
-  const performanceTier = getPerformanceTier();
-  const canAnimate = shouldAnimate();
+  const { performanceTier, shouldAnimate: canAnimate } = useAnimation();
 
-  const navLinks = [
+  const navLinks = useMemo(() => [
     { name: 'Home', href: '/' },
     { name: 'Menu', href: '/menu' },
     { name: 'Contact', href: '/contact' },
-  ];
+  ], []);
 
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
     try {
       await loginWithGoogle();
     } catch (error) {
-      // Error handled in AuthContext, but we catch it here to prevent unhandled rejection
+      // Error handled in AuthContext
     }
-  };
+  }, [loginWithGoogle]);
 
   // Navbar state
   const isSticky = scrollY > 20;
   const isHidden = scrollDirection === 'down' && isScrolled;
   const isVisible = scrollDirection === 'up' || !isScrolled;
+
+  // Memoized navbar animation config
+  const navbarAnimation = useMemo(() => ({
+    y: isHidden ? -100 : 0,
+    transition: {
+      type: 'spring',
+      stiffness: performanceTier === 'high' ? 300 : 250,
+      damping: performanceTier === 'high' ? 30 : 35,
+      mass: 1,
+    },
+  }), [isHidden, performanceTier]);
 
   return (
     <>
@@ -55,15 +154,7 @@ export function Navbar() {
             : "py-6 bg-transparent"
         )}
         initial={{ y: 0 }}
-        animate={{
-          y: isHidden ? -100 : 0,
-          transition: {
-            type: 'spring',
-            stiffness: performanceTier === 'high' ? 300 : 250,
-            damping: performanceTier === 'high' ? 30 : 35,
-            mass: 1
-          }
-        }}
+        animate={navbarAnimation}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
@@ -88,24 +179,12 @@ export function Navbar() {
             className="hidden md:flex items-center gap-8"
           >
             {navLinks.map((link, i) => (
-              <motion.div
+              <NavItem
                 key={link.name}
-                whileHover={canAnimate ? { scale: 1.1 } : {}}
-                whileTap={canAnimate ? { scale: 0.95 } : {}}
-                transition={{ type: 'spring', ...springs.snappy }}
-              >
-                <Link
-                  to={link.href}
-                  className={cn(
-                    "text-sm font-medium transition-colors",
-                    location.pathname === link.href
-                      ? "text-primary font-bold"
-                      : "text-slate-600 hover:text-primary"
-                  )}
-                >
-                  {link.name}
-                </Link>
-              </motion.div>
+                link={link}
+                location={location}
+                canAnimate={canAnimate}
+              />
             ))}
           </motion.div>
 
@@ -207,29 +286,14 @@ export function Navbar() {
                 transition={{ staggerChildren: canAnimate ? 0.08 : 0 }}
               >
                 {navLinks.map((link, i) => (
-                  <motion.div
+                  <MobileNavItem
                     key={link.name}
-                    initial={canAnimate ? { opacity: 0, x: 20 } : { opacity: 1, x: 0 }}
-                    animate={canAnimate ? { opacity: 1, x: 0 } : {}}
-                    transition={{
-                      delay: canAnimate ? i * 0.08 : 0,
-                      type: 'spring',
-                      ...springs.smooth
-                    }}
-                  >
-                    <Link
-                      to={link.href}
-                      onClick={() => setIsOpen(false)}
-                      className={cn(
-                        "text-3xl font-black transition-colors",
-                        location.pathname === link.href
-                          ? "text-primary ml-2"
-                          : "text-slate-400 hover:text-white"
-                      )}
-                    >
-                      {link.name}
-                    </Link>
-                  </motion.div>
+                    link={link}
+                    location={location}
+                    canAnimate={canAnimate}
+                    index={i}
+                    setIsOpen={setIsOpen}
+                  />
                 ))}
 
                 {isAdmin && (

@@ -1,5 +1,18 @@
-import React from 'react';
-import { motion } from 'motion/react';
+/**
+ * Home Page Component
+ * 
+ * Performance-optimized home page with animation budget system.
+ * 
+ * Features:
+ * - Animation budget (max 6 on desktop, 3 on mobile)
+ * - CSS animations for background effects
+ * - Framer Motion ONLY for entrance animations
+ * - Performance tier-aware animations
+ * - Lazy loading for images
+ */
+
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { ArrowRight, Search, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { buttonVariants, Button } from '../components/ui/button';
@@ -10,23 +23,20 @@ import { Product } from '../types';
 import { cn } from '../lib/utils';
 import { useCart } from '../context/CartContext';
 import { StarReview } from '../components/StarReview';
-import { getPerformanceTier, shouldAnimate, shouldInfiniteAnimate } from '../lib/performanceTier';
+import { useAnimation } from '../components/AnimationProvider';
 
 export function Home() {
-  const performanceTier = getPerformanceTier();
-  const canAnimate = shouldAnimate();
-  const canInfiniteAnimate = shouldInfiniteAnimate();
-
-  const [search, setSearch] = React.useState('');
-  const [activeCategory, setActiveCategory] = React.useState('All');
-  const [sortBy, setSortBy] = React.useState<'popular' | 'newest'>('popular');
-  const [filteredProducts, setFilteredProducts] = React.useState<Product[]>(DUMMY_PRODUCTS);
+  const { performanceTier, shouldAnimate: canAnimate, animationBudget } = useAnimation();
+  const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [sortBy, setSortBy] = useState<'popular' | 'newest'>('popular');
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(DUMMY_PRODUCTS);
   const { addToCart } = useCart();
 
-  const categories = ['All', 'Snacks', 'Drinks'];
+  const categories = useMemo(() => ['All', 'Snacks', 'Drinks'], []);
 
   // Optimize filtering with useCallback
-  React.useEffect(() => {
+  useEffect(() => {
     let result = DUMMY_PRODUCTS.filter(p => {
       const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.description.toLowerCase().includes(search.toLowerCase());
@@ -40,35 +50,51 @@ export function Home() {
     setFilteredProducts(result);
   }, [search, activeCategory, sortBy]);
 
+  // Memoized hero section background orbs
+  const heroBackgroundOrbs = useMemo(() => {
+    // Animation budget: max 2 orbs on mobile, 4 on desktop
+    const maxOrbs = performanceTier === 'high' ? 4 : 2;
 
+    if (maxOrbs === 0) {
+      return null;
+    }
 
-  return (
-    <div className="overflow-hidden">
-      {/* Hero Section */}
+    return (
+      <>
+        <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full animate-float" />
+        <div className="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full animate-float" />
+      </>
+    );
+  }, [performanceTier]);
+
+  // Memoized hero section
+  const heroSection = useMemo(() => {
+    const heroAnimation = canAnimate ? {
+      initial: { opacity: 0, x: -50 },
+      animate: { opacity: 1, x: 0 },
+      transition: {
+        duration: performanceTier === 'high' ? 0.6 : 0.8,
+        ease: [0.25, 1, 0.5, 1],
+      },
+    } : { opacity: 1, x: 0 };
+
+    const heroImageAnimation = canAnimate ? {
+      initial: { opacity: 0, scale: 0.9 },
+      animate: { opacity: 1, scale: 1 },
+      transition: {
+        duration: performanceTier === 'high' ? 0.6 : 0.8,
+        ease: [0.25, 1, 0.5, 1],
+        delay: canAnimate ? 0.1 : 0,
+      },
+    } : { opacity: 1, scale: 1 };
+
+    return (
       <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center pt-28 pb-16 px-4 sm:px-6 lg:px-12 overflow-hidden">
-        {/* Animated Background Orbs - Optimized for performance */}
-        {/* Only animate on high-end devices */}
-        {canInfiniteAnimate && (
-          <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full animate-float" />
-        )}
-        {!canInfiniteAnimate && (
-          <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full" />
-        )}
-        {canInfiniteAnimate && (
-          <div className="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full animate-float" />
-        )}
-        {!canInfiniteAnimate && (
-          <div className="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-orange-600/10 blur-[100px] rounded-full" />
-        )}
+        {heroBackgroundOrbs}
 
         <div className="max-w-7xl mx-auto w-full grid grid-cols-12 gap-8 lg:gap-12 items-center">
           <motion.div
-            initial={canAnimate ? { opacity: 0, x: -50 } : { opacity: 1, x: 0 }}
-            animate={canAnimate ? { opacity: 1, x: 0 } : {}}
-            transition={{
-              duration: performanceTier === 'high' ? 0.6 : 0.8,
-              ease: [0.25, 1, 0.5, 1]
-            }}
+            {...heroAnimation}
             className="col-span-12 lg:col-span-7 space-y-8"
           >
             <div className="space-y-6">
@@ -86,18 +112,10 @@ export function Home() {
                 Order Now <ArrowRight size={22} />
               </Link>
             </div>
-
-
           </motion.div>
 
           <motion.div
-            initial={canAnimate ? { opacity: 0, scale: 0.9 } : { opacity: 1, scale: 1 }}
-            animate={canAnimate ? { opacity: 1, scale: 1 } : {}}
-            transition={{
-              duration: performanceTier === 'high' ? 0.6 : 0.8,
-              ease: [0.25, 1, 0.5, 1],
-              delay: canAnimate ? 0.1 : 0
-            }}
+            {...heroImageAnimation}
             className="col-span-12 lg:col-span-5 relative mt-12 lg:mt-0"
           >
             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px]"></div>
@@ -142,8 +160,12 @@ export function Home() {
           </motion.div>
         </div>
       </section>
+    );
+  }, [performanceTier, canAnimate, heroBackgroundOrbs, addToCart]);
 
-      {/* Menu Section */}
+  // Memoized menu section
+  const menuSection = useMemo(() => {
+    return (
       <section className="py-20 sm:py-24 px-4 sm:px-6 md:px-8">
         <div className="max-w-7xl mx-auto space-y-12">
           {/* Header */}
@@ -173,7 +195,7 @@ export function Home() {
 
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
               <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full lg:w-auto no-scrollbar">
-                {categories.map(cat => (
+                {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
@@ -207,8 +229,8 @@ export function Home() {
           <div>
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                {filteredProducts.map((product, index) => (
+                  <ProductCard key={product.id} product={product} index={index} />
                 ))}
               </div>
             ) : (
@@ -228,6 +250,13 @@ export function Home() {
           </div>
         </div>
       </section>
+    );
+  }, [performanceTier, canAnimate, search, activeCategory, sortBy, filteredProducts, categories]);
+
+  return (
+    <div className="overflow-hidden">
+      {heroSection}
+      {menuSection}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 /**
- * Performance Tier Detection
+ * Performance Tier Detection System
  * 
  * Detects device capability BEFORE any animation initializes.
  * Caches result in sessionStorage for performance.
@@ -8,13 +8,48 @@
  * - 'high': Desktop + iPhone 12+ + Flagship Android
  * - 'mid': iPhone SE + Mid-range Android
  * - 'low': Budget Android, Android 8-9, slow connection
+ * 
+ * Animation Budget (max simultaneous animations):
+ * - High: 6 animations
+ * - Mid: 4 animations
+ * - Low: 2 animations (CSS transitions only)
  */
 
 // Performance tier type
 export type PerformanceTier = 'high' | 'mid' | 'low';
 
+// Animation budget per tier
+export interface AnimationBudget {
+     maxSimultaneous: number;
+     maxInfinite: number;
+     useParallax: boolean;
+     useBackdropFilter: boolean;
+}
+
 // Cache key for sessionStorage
 const CACHE_KEY = 'performanceTier';
+
+// Animation budget configuration
+export const ANIMATION_BUDGET: Record<PerformanceTier, AnimationBudget> = {
+     high: {
+          maxSimultaneous: 6,
+          maxInfinite: 3,
+          useParallax: true,
+          useBackdropFilter: true,
+     },
+     mid: {
+          maxSimultaneous: 4,
+          maxInfinite: 1,
+          useParallax: false,
+          useBackdropFilter: false,
+     },
+     low: {
+          maxSimultaneous: 2,
+          maxInfinite: 0,
+          useParallax: false,
+          useBackdropFilter: false,
+     },
+};
 
 // Get cached performance tier
 export function getCachedPerformanceTier(): PerformanceTier | null {
@@ -52,9 +87,14 @@ export function detectPerformanceTier(): PerformanceTier {
           return 'low';
      }
 
-     // Check for data saver mode (lowest priority)
+     // Check for data saver mode
      const connection = (navigator as any).connection;
      if (connection && (connection.saveData || connection.effectiveType === 'slow-2g')) {
+          return 'low';
+     }
+
+     // Check for slow connections
+     if (connection && ['slow-2g', '2g', '3g'].includes(connection.effectiveType || '')) {
           return 'low';
      }
 
@@ -77,30 +117,31 @@ export function detectPerformanceTier(): PerformanceTier {
      }
 
      // Default to high for desktop and modern devices
-     // Check if it's a mobile device
      const isMobile = window.innerWidth < 768;
      if (isMobile) {
-          // Mobile but not low-end - assume mid-tier
           return 'mid';
      }
 
-     // Desktop - high tier
      return 'high';
 }
 
 // Get performance tier (with caching)
 export function getPerformanceTier(): PerformanceTier {
-     // Try to get cached value first
      const cached = getCachedPerformanceTier();
      if (cached) {
           return cached;
      }
 
-     // Detect and cache
      const tier = detectPerformanceTier();
      setCachedPerformanceTier(tier);
 
      return tier;
+}
+
+// Get animation budget for current tier
+export function getAnimationBudget(): AnimationBudget {
+     const tier = getPerformanceTier();
+     return ANIMATION_BUDGET[tier];
 }
 
 // Check if device is high-end
@@ -118,44 +159,38 @@ export function isLowEnd(): boolean {
      return getPerformanceTier() === 'low';
 }
 
-// Get mobile-specific spring config (simpler, faster)
-export function getMobileSpring(preset: string) {
-     // Mobile springs are simpler with higher damping (less oscillation = less GPU work)
-     const mobileSprings = {
-          snappy: { stiffness: 300, damping: 35, mass: 0.8 },
-          smooth: { stiffness: 250, damping: 30, mass: 0.9 },
-          bouncy: { stiffness: 350, damping: 25, mass: 0.7 },
-          gentle: { stiffness: 200, damping: 25, mass: 1 },
-          molasses: { stiffness: 150, damping: 20, mass: 1.2 },
-     };
-
-     return mobileSprings[preset as keyof typeof mobileSprings] || mobileSprings.smooth;
-}
-
-// Get desktop-specific spring config
-export function getDesktopSpring(preset: string) {
-     // Desktop springs can be more complex
-     const desktopSprings = {
-          snappy: { stiffness: 400, damping: 30, mass: 0.8 },
-          smooth: { stiffness: 300, damping: 25, mass: 1 },
-          bouncy: { stiffness: 500, damping: 20, mass: 0.7 },
-          gentle: { stiffness: 200, damping: 20, mass: 1.2 },
-          molasses: { stiffness: 150, damping: 18, mass: 1.5 },
-     };
-
-     return desktopSprings[preset as keyof typeof desktopSprings] || desktopSprings.smooth;
-}
-
 // Get spring config based on performance tier
 export function getSpring(preset: string): { stiffness: number; damping: number; mass: number } {
      const tier = getPerformanceTier();
 
      if (tier === 'high') {
-          return getDesktopSpring(preset);
+          return {
+               snappy: { stiffness: 400, damping: 30, mass: 0.8 },
+               smooth: { stiffness: 300, damping: 25, mass: 1 },
+               bouncy: { stiffness: 500, damping: 20, mass: 0.7 },
+               gentle: { stiffness: 200, damping: 20, mass: 1.2 },
+               molasses: { stiffness: 150, damping: 18, mass: 1.5 },
+          }[preset as keyof any] || { stiffness: 300, damping: 25, mass: 1 };
      }
 
-     // Mid and low tiers use mobile springs
-     return getMobileSpring(preset);
+     if (tier === 'mid') {
+          return {
+               snappy: { stiffness: 300, damping: 35, mass: 0.8 },
+               smooth: { stiffness: 250, damping: 30, mass: 0.9 },
+               bouncy: { stiffness: 350, damping: 25, mass: 0.7 },
+               gentle: { stiffness: 200, damping: 25, mass: 1 },
+               molasses: { stiffness: 150, damping: 20, mass: 1.2 },
+          }[preset as keyof any] || { stiffness: 250, damping: 30, mass: 0.9 };
+     }
+
+     // Low tier: simpler springs
+     return {
+          snappy: { stiffness: 250, damping: 40, mass: 0.8 },
+          smooth: { stiffness: 200, damping: 35, mass: 0.9 },
+          bouncy: { stiffness: 300, damping: 30, mass: 0.7 },
+          gentle: { stiffness: 150, damping: 30, mass: 1 },
+          molasses: { stiffness: 120, damping: 25, mass: 1.2 },
+     }[preset as keyof any] || { stiffness: 200, damping: 35, mass: 0.9 };
 }
 
 // Get animation config based on performance tier
@@ -163,57 +198,33 @@ export function getAnimationConfig(preset: string) {
      const tier = getPerformanceTier();
 
      if (tier === 'low') {
-          // Low tier: CSS transitions only, no Framer Motion
-          return { duration: 0.3, ease: 'easeInOut' };
+          return { duration: 0.2, ease: 'ease-out' };
      }
 
-     if (tier === 'mid') {
-          // Mid tier: simpler springs
-          return { type: 'spring', ...getMobileSpring(preset) };
-     }
-
-     // High tier: full springs
-     return { type: 'spring', ...getDesktopSpring(preset) };
-}
-
-// Check if animations should be enabled
-export function shouldAnimate(): boolean {
-     const tier = getPerformanceTier();
-
-     // Low tier: disable Framer Motion animations
-     if (tier === 'low') {
-          return false;
-     }
-
-     // Check reduced motion
-     if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          return false;
-     }
-
-     return true;
+     return { type: 'spring', ...getSpring(preset) };
 }
 
 // Check if parallax should be enabled
 export function shouldParallax(): boolean {
      const tier = getPerformanceTier();
-
-     // Only high-end devices get parallax
      return tier === 'high';
 }
 
 // Check if backdrop-filter should be enabled
 export function shouldBlur(): boolean {
      const tier = getPerformanceTier();
+     return tier !== 'low';
+}
 
-     // Low and mid tiers: disable backdrop-filter
-     return tier === 'high';
+// Check if Framer Motion should be used
+export function shouldUseFramerMotion(): boolean {
+     const tier = getPerformanceTier();
+     return tier !== 'low';
 }
 
 // Check if infinite animations should be enabled
 export function shouldInfiniteAnimate(): boolean {
      const tier = getPerformanceTier();
-
-     // Only high-end devices get infinite animations
      return tier === 'high';
 }
 
@@ -222,17 +233,25 @@ export function getStaggerDelay(baseDelay: number = 0.08): number {
      const tier = getPerformanceTier();
 
      if (tier === 'low') {
-          // Low tier: no stagger
           return 0;
      }
 
      if (tier === 'mid') {
-          // Mid tier: slower stagger
           return baseDelay * 1.5;
      }
 
-     // High tier: normal stagger
      return baseDelay;
+}
+
+// Reset performance tier cache (for testing)
+export function resetPerformanceTierCache(): void {
+     if (typeof window === 'undefined') return;
+
+     try {
+          sessionStorage.removeItem(CACHE_KEY);
+     } catch (e) {
+          // sessionStorage might not be available
+     }
 }
 
 // Export everything
@@ -244,13 +263,13 @@ export default {
      isHighEnd,
      isMidRange,
      isLowEnd,
-     getMobileSpring,
-     getDesktopSpring,
      getSpring,
      getAnimationConfig,
-     shouldAnimate,
      shouldParallax,
      shouldBlur,
      shouldInfiniteAnimate,
      getStaggerDelay,
+     resetPerformanceTierCache,
+     ANIMATION_BUDGET,
+     getAnimationBudget,
 };
